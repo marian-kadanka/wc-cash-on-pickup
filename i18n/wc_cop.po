@@ -1,0 +1,91 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Cash on Pickup\n"
+"POT-Creation-Date: 2014-03-04 09:05+0100\n"
+"PO-Revision-Date: 2014-03-04 09:05+0100\n"
+"Last-Translator: Nicola Mustone <nicola.mustone@ecomstore.net>\n"
+"Language-Team: Nicola Mustone <mustone.nicola@gmail.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.4\n"
+"X-Poedit-Basepath: ../\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: classes/class.wc-cop.php:44 classes/class.wc-cop.php:104
+msgid "Cash on pickup"
+msgstr ""
+
+#: classes/class.wc-cop.php:45
+msgid "Place order"
+msgstr ""
+
+#: classes/class.wc-cop.php:71
+msgid "Cash on Pickup"
+msgstr ""
+
+#: classes/class.wc-cop.php:72
+msgid "Have your customers pay with cash (or by other means) on pickup."
+msgstr ""
+
+#: classes/class.wc-cop.php:95
+msgid "Enable/Disable"
+msgstr ""
+
+#: classes/class.wc-cop.php:97
+msgid "Enable Cash On Pickup"
+msgstr ""
+
+#: classes/class.wc-cop.php:101
+msgid "Title"
+msgstr ""
+
+#: classes/class.wc-cop.php:103
+msgid "This controls the title which the user sees during checkout"
+msgstr ""
+
+#: classes/class.wc-cop.php:108
+msgid "Customer Message"
+msgstr ""
+
+#: classes/class.wc-cop.php:110
+msgid "Pay your order in cash as you pick it up at our store."
+msgstr ""
+
+#: classes/class.wc-cop.php:113
+msgid "Instructions"
+msgstr ""
+
+#: classes/class.wc-cop.php:115
+msgid "Instructions that will be added to the thank you page."
+msgstr ""
+
+#: classes/class.wc-cop.php:116
+msgid "Pay with cash on pickup at [Store address]."
+msgstr ""
+
+#: classes/class.wc-cop.php:119
+msgid "Enable for shipping methods"
+msgstr ""
+
+#: classes/class.wc-cop.php:124
+msgid ""
+"If COP is only available for certain methods, set it up here. Leave blank to "
+"enable for all methods."
+msgstr ""
+
+#: classes/class.wc-cop.php:183
+msgid "Awaiting cash payment"
+msgstr ""
+
+#: woocommerce-cash-on-pickup-wc-gateway.php:70
+msgid "Settings"
+msgstr ""
+
+#: woocommerce-cash-on-pickup-wc-gateway.php:72
+msgid "Donate"
+msgstr ""

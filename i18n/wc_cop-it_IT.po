@@ -1,0 +1,100 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Cash on Pickup 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-04 09:05+0100\n"
+"PO-Revision-Date: 2014-03-04 09:05+0100\n"
+"Last-Translator: Nicola Mustone <nicola.mustone@ecomstore.net>\n"
+"Language-Team: Nicola Mustone <mustone.nicola@gmail.com>\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Poedit 1.6.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ../\n"
+"X-Textdomain-Support: yes\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: classes/class.wc-cop.php:44 classes/class.wc-cop.php:104
+msgid "Cash on pickup"
+msgstr "Pagamento in contanti"
+
+#: classes/class.wc-cop.php:45
+msgid "Place order"
+msgstr "Effettua Ordine"
+
+#: classes/class.wc-cop.php:71
+msgid "Cash on Pickup"
+msgstr "Pagamento in contanti"
+
+#: classes/class.wc-cop.php:72
+msgid "Have your customers pay with cash (or by other means) on pickup."
+msgstr "Accetta pagamenti in contanti (o altro) al ritiro in sede."
+
+#: classes/class.wc-cop.php:95
+msgid "Enable/Disable"
+msgstr "Abilita/Disabilita"
+
+#: classes/class.wc-cop.php:97
+msgid "Enable Cash On Pickup"
+msgstr "Abilita Pagamento in contanti"
+
+#: classes/class.wc-cop.php:101
+msgid "Title"
+msgstr "Titolo"
+
+#: classes/class.wc-cop.php:103
+msgid "This controls the title which the user sees during checkout"
+msgstr "Modifica il titolo che vede l'utente quando completa l'acquisto"
+
+#: classes/class.wc-cop.php:108
+msgid "Customer Message"
+msgstr "Messaggio al cliente"
+
+#: classes/class.wc-cop.php:110
+msgid "Pay your order in cash as you pick it up at our store."
+msgstr "Paga il tuo ordine in contanti ritirandolo al nostro negozio."
+
+#: classes/class.wc-cop.php:113
+msgid "Instructions"
+msgstr "Istruzioni"
+
+#: classes/class.wc-cop.php:115
+msgid "Instructions that will be added to the thank you page."
+msgstr "Instruzioni che saranno aggiunta alla pagina di ringraziamento."
+
+#: classes/class.wc-cop.php:116
+msgid "Pay with cash on pickup at [Store address]."
+msgstr ""
+"Paga il tuo ordine in contanti ritirandolo al nostro negozio in [Indirizzo "
+"negozio]."
+
+# @ wc_pgec
+#: classes/class.wc-cop.php:119
+msgid "Enable for shipping methods"
+msgstr "Abilita per i metodi di spedizione"
+
+#: classes/class.wc-cop.php:124
+msgid ""
+"If COP is only available for certain methods, set it up here. Leave blank to "
+"enable for all methods."
+msgstr ""
+"Se il pagamento in contanti &egrave; disponibile solo per alcuni metodi di "
+"spedizione, specificalo qui. Lascia vuoto per abilitarlo per tutti i metodi."
+
+#: classes/class.wc-cop.php:183
+msgid "Awaiting cash payment"
+msgstr "In attesa del pagamento in contanti"
+
+#: woocommerce-cash-on-pickup-wc-gateway.php:70
+msgid "Settings"
+msgstr "Impostazioni"
+
+# @ wc_pgec
+#: woocommerce-cash-on-pickup-wc-gateway.php:72
+msgid "Donate"
+msgstr "Fai una donazione"
