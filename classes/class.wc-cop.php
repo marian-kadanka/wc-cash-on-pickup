@@ -85,7 +85,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 
         if ( is_admin() ) {
             foreach ( WC()->shipping->load_shipping_methods() as $method ) {
-                $shipping_methods[ $method->id ] = $method->get_title();
+                $shipping_methods[ $method->id ] = $method->get_method_title();
             }
         }
 
