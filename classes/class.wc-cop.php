@@ -57,6 +57,9 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
         add_action( 'woocommerce_thankyou_cop', array( $this, 'thankyou_page' ) );
+
+        // Customer Emails
+        add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
     }
 
     /**
@@ -221,6 +224,20 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
     public function thankyou_page() {
         if ( $this->instructions ) {
             echo wpautop( wptexturize( wp_kses_post( $this->instructions ) ) );
+        }
+    }
+
+    /**
+     * Add content to the WC emails.
+     *
+     * @access public
+     * @param WC_Order $order
+     * @param bool $sent_to_admin
+     * @param bool $plain_text
+     */
+    public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
+        if ( $this->instructions && ! $sent_to_admin && 'cop' === $order->payment_method && $order->has_status( $this->default_order_status ) ) {
+            echo wpautop( wptexturize( $this->instructions ) ) . PHP_EOL;
         }
     }
 }
