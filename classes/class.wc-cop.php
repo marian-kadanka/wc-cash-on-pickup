@@ -53,6 +53,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
         $this->description        = $this->get_option( 'description' );
         $this->instructions       = $this->get_option( 'instructions' );
         $this->enable_for_methods = $this->get_option( 'enable_for_methods', array() );
+        $this->default_order_status = $this->get_option( 'default_order_status', apply_filters( 'wc_cop_default_order_status', 'on-hold') );
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
         add_action( 'woocommerce_thankyou_cop', array( $this, 'thankyou_page' ) );
@@ -89,6 +90,12 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
             }
         }
 
+        $order_statuses = array();
+        $statuses = function_exists( 'wc_get_order_statuses' ) ? wc_get_order_statuses() : array();
+        foreach ( $statuses as $status => $status_name ) {
+            $order_statuses[ substr( $status, 3 ) ] = $statuses[ $status ];
+        }
+
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __( 'Enable/Disable', 'wc_cop' ),
@@ -123,6 +130,12 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
                 'description'   => __( 'If COP is only available for certain methods, set it up here. Leave blank to enable for all methods.', 'wc_cop' ),
                 'options'       => $shipping_methods,
                 'desc_tip'      => true,
+            ),
+            'default_order_status' => array(
+                'title'         => __( 'Default Order Status', 'wc_cop' ),
+                'type'          => 'select',
+                'default'       => apply_filters( 'wc_cop_default_order_status', 'on-hold' ),
+                'options'       => $order_statuses,
             )
         );
     }
@@ -187,8 +200,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
     public function process_payment( $order_id ) {
         $order = wc_get_order( $order_id );
 
-        // Mark as on-hold (we're awaiting the cheque)
-        $order->update_status( apply_filters( 'wc_cop_default_order_status', 'on-hold' ), __( 'Awaiting cash payment', 'wc_cop' ) );
+        $order->update_status( apply_filters( 'wc_cop_default_order_status', $this->default_order_status ) );
 
         // Reduce stock levels
         $order->reduce_order_stock();
