@@ -55,7 +55,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
         $this->enable_for_methods = $this->get_option( 'enable_for_methods', array() );
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-        add_action( 'woocommerce_thankyou_cop', array( $this, 'thankyou' ) );
+        add_action( 'woocommerce_thankyou_cop', array( $this, 'thankyou_page' ) );
     }
 
     /**
@@ -185,7 +185,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
      * @return array
      */
     public function process_payment( $order_id ) {
-        $order = new WC_Order( $order_id );
+        $order = wc_get_order( $order_id );
 
         // Mark as on-hold (we're awaiting the cheque)
         $order->update_status( apply_filters( 'wc_cop_default_order_status', 'on-hold' ), __( 'Awaiting cash payment', 'wc_cop' ) );
@@ -205,11 +205,11 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 
     /**
      * Output for the order received page.
-     *
-     * @return void
      */
-    public function thankyou() {
-        echo $this->instructions != '' ? wpautop( wptexturize( wp_kses_post( $this->instructions ) ) ) : '';
+    public function thankyou_page() {
+        if ( $this->instructions ) {
+            echo wpautop( wptexturize( wp_kses_post( $this->instructions ) ) );
+        }
     }
 }
 endif;
