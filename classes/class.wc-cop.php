@@ -86,17 +86,17 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
      */
     public function init_form_fields() {
         $shipping_methods = array();
+        $order_statuses = array();
 
         if ( is_admin() ) {
             foreach ( WC()->shipping->load_shipping_methods() as $method ) {
                 $shipping_methods[ $method->id ] = $method->get_method_title();
             }
-        }
 
-        $order_statuses = array();
-        $statuses = function_exists( 'wc_get_order_statuses' ) ? wc_get_order_statuses() : array();
-        foreach ( $statuses as $status => $status_name ) {
-            $order_statuses[ substr( $status, 3 ) ] = $statuses[ $status ];
+            $statuses = function_exists( 'wc_get_order_statuses' ) ? wc_get_order_statuses() : array();
+            foreach ( $statuses as $status => $status_name ) {
+                $order_statuses[ substr( $status, 3 ) ] = $status_name;
+            }
         }
 
         $this->form_fields = array(
