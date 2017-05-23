@@ -56,7 +56,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
         $this->default_order_status = $this->get_option( 'default_order_status', apply_filters( 'wc_cop_default_order_status', 'on-hold') );
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-        add_action( 'woocommerce_thankyou_cop', array( $this, 'thankyou_page' ) );
+		  add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 
         // Customer Emails
         add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
@@ -162,7 +162,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
             // Test if order needs shipping.
             if ( 0 < sizeof( $order->get_items() ) ) {
                 foreach ( $order->get_items() as $item ) {
-                    $_product = $order->get_product_from_item( $item );
+                    $_product = $item->get_product();
                     if ( $_product && $_product->needs_shipping() ) {
                         $needs_shipping = true;
                         break;
@@ -196,7 +196,6 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
                 if ( $order->shipping_method ) {
                     $check_method = $order->shipping_method;
                 }
-
             } elseif ( empty( $chosen_shipping_methods ) || sizeof( $chosen_shipping_methods ) > 1 ) {
                 $check_method = false;
             } elseif ( sizeof( $chosen_shipping_methods ) == 1 ) {
@@ -236,7 +235,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
         $order->update_status( apply_filters( 'wc_cop_default_order_status', $this->default_order_status ) );
 
         // Reduce stock levels
-        $order->reduce_order_stock();
+        wc_reduce_stock_levels( $order_id );
 
         // Remove cart
         WC()->cart->empty_cart();
@@ -244,7 +243,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
         // Return thankyou redirect
         return array(
             'result'    => 'success',
-            'redirect'  => $this->get_return_url( $order )
+            'redirect'  => $this->get_return_url( $order ),
         );
     }
 
@@ -253,7 +252,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
      */
     public function thankyou_page() {
         if ( $this->instructions ) {
-            echo wpautop( wptexturize( wp_kses_post( $this->instructions ) ) );
+            echo wpautop( wptexturize( $this->instructions ) );
         }
     }
 
@@ -266,7 +265,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
      * @param bool $plain_text
      */
     public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
-        if ( $this->instructions && ! $sent_to_admin && 'cop' === $order->payment_method && $order->has_status( $this->default_order_status ) ) {
+        if ( $this->instructions && ! $sent_to_admin && $this->id === $order->get_payment_method() && $order->has_status( $this->default_order_status ) ) {
             echo wpautop( wptexturize( $this->instructions ) ) . PHP_EOL;
         }
     }
