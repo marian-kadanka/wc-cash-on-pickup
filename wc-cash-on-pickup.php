@@ -3,19 +3,20 @@
 Plugin Name:       WooCommerce Cash On Pickup
 Plugin URI:        https://wordpress.org/plugins/wc-cash-on-pickup/
 Description:       A WooCommerce Extension that adds the payment gateway "Cash On Pickup"
-Version:           1.1.2
-Author:            Pinch Of Code
-Author URI:        http://pinchofcode.com
+Version:           1.1.3
+Author:            Marian Kadanka
+Author URI:        https://github.com/marian-kadanka
 Textdomain:        wc_cop
 Domain Path:       /i18n
 License:           GPL-2.0+
 License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
-GitHub Plugin URI: hhttps://github.com/PinchOfCode/wc-cash-on-pickup
+GitHub Plugin URI: https://github.com/marian-kadanka/wc-cash-on-pickup
 */
 
 /**
  * WooCommerce Cash On Pickup
  * Copyright (C) 2013-2014 Pinch Of Code. All rights reserved.
+ * Copyright (C) 2017 Marian Kadanka. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,19 +31,23 @@ GitHub Plugin URI: hhttps://github.com/PinchOfCode/wc-cash-on-pickup
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * Contact the author at info@pinchofcode.com
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 /**
  * Start the plugin
  */
 function wc_cop_init() {
-    global $woocommerce;
+	global $woocommerce;
 
-    if( !isset( $woocommerce ) ) { return; }
+	if ( !isset( $woocommerce ) ) {
+		return;
+	}
 
-    require_once( 'classes/class.wc-cop.php' );
+	require_once( 'classes/class.wc-cop.php' );
 }
 add_action( 'plugins_loaded', 'wc_cop_init' );
 
@@ -51,11 +56,11 @@ add_action( 'plugins_loaded', 'wc_cop_init' );
  * @param $methods
  * @return array
  */
-function add_cash_on_pickup( $methods ) {
-    $methods[] = 'WC_Gateway_Cash_on_pickup';
-    return $methods;
+function wc_cop_register_gateway( $methods ) {
+	$methods[] = 'WC_Gateway_Cash_on_pickup';
+	return $methods;
 }
-add_filter( 'woocommerce_payment_gateways', 'add_cash_on_pickup' );
+add_filter( 'woocommerce_payment_gateways', 'wc_cop_register_gateway' );
 
 /**
  * Add "Donate" link in plugins list page
@@ -65,13 +70,13 @@ add_filter( 'woocommerce_payment_gateways', 'add_cash_on_pickup' );
  * @return mixed
  */
 function wc_cop_add_donate_link( $links, $file ) {
-    if( $file == plugin_basename( __FILE__ ) ) {
-        //Settings link
-        array_unshift( $links, '<a href="' . site_url() . '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=wc_gateway_cash_on_pickup" title="' . __( 'Settings', 'wc_cop' ) . '">' . __( 'Settings', 'wc_cop' ) . '</a>' );
-        //Donate link
-        array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal@pinchofcode.com&item_name=Donation+for+Pinch+Of+Code" title="' . __( 'Donate', 'wc_pgec' ) . '" target="_blank">' . __( 'Donate', 'wc_cop' ) . '</a>' );
-    }
+	if ( $file == plugin_basename( __FILE__ ) ) {
+		//Settings link
+		array_unshift( $links, '<a href="' . site_url() . '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=cop" title="' . __( 'Settings', 'wc_cop' ) . '">' . __( 'Settings', 'wc_cop' ) . '</a>' );
+		//Donate link
+		array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka" title="' . __( 'Donate', 'wc_cop' ) . '" target="_blank">' . __( 'Donate', 'wc_cop' ) . '</a>' );
+	}
 
-    return $links;
+	return $links;
 }
 add_filter( 'plugin_action_links', 'wc_cop_add_donate_link', 10, 4 );
