@@ -1,10 +1,10 @@
 === WooCommerce Cash On Pickup ===
-Contributors: pinchofcode
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal@pinchofcode.com&item_name=Donation+for+Pinch+Of+Code
-Tags: woocommerce, pickup, payment, shipping, method, gateway, cash
+Contributors: mariankadanka
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka
+Tags: woocommerce, pickup, payment, gateway, cash, cop
 Requires at least: 3.5
-Tested up to: 3.9.1
-Stable tag: 1.1.2
+Tested up to: 4.8
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,14 @@ The manual installation method involves downloading our plugin and uploading it 
 
 == Changelog ==
 
+= 1.1.3 =
+* Plugin mantainer changed
+* WooCommerce 3.0+ IS NOW REQUIRED!
+* Add: option to choose default order status added
+* Add: instructions are now added to the email send to a customer
+* Fix: broken admin input field "Enable for shipping methods"
+* Fix: code and indentation cleanup, more code imported from WooCommerce COD gateway
+
 = 1.1.2 =
 * Add: WPML support
 
@@ -49,6 +57,7 @@ The manual installation method involves downloading our plugin and uploading it 
 == License ==
 
 Copyright (C) 2013-2014 Pinch Of Code. All rights reserved.
+Copyright (C) 2017 Marian Kadanka. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
