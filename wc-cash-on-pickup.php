@@ -63,20 +63,20 @@ function wc_cop_register_gateway( $methods ) {
 add_filter( 'woocommerce_payment_gateways', 'wc_cop_register_gateway' );
 
 /**
- * Add "Donate" link in plugins list page
+ * Show action links on the plugin screen.
  *
  * @param $links
  * @param $file
  * @return mixed
  */
-function wc_cop_add_donate_link( $links, $file ) {
+function wc_cop_action_links( $links, $file ) {
 	if ( $file == plugin_basename( __FILE__ ) ) {
 		//Settings link
-		array_unshift( $links, '<a href="' . site_url() . '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=cop" title="' . __( 'Settings', 'wc_cop' ) . '">' . __( 'Settings', 'wc_cop' ) . '</a>' );
+		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=cop' ) . '" title="' . esc_attr__( 'Settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>' );
 		//Donate link
-		array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka" title="' . __( 'Donate', 'wc_cop' ) . '" target="_blank">' . __( 'Donate', 'wc_cop' ) . '</a>' );
+		array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka" title="' . esc_attr__( 'Donate', 'wc_cop' ) . '" target="_blank">' . esc_html__( 'Donate', 'wc_cop' ) . '</a>' );
 	}
 
 	return $links;
 }
-add_filter( 'plugin_action_links', 'wc_cop_add_donate_link', 10, 4 );
+add_filter( 'plugin_action_links', 'wc_cop_action_links', 10, 4 );
