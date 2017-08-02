@@ -31,7 +31,7 @@ The manual installation method involves downloading our plugin and uploading it 
 == Changelog ==
 
 = 1.1.3 =
-* Plugin mantainer changed
+* Plugin maintainer changed
 * Add: option to choose default order status added
 * Add: instructions are now added to the email send to a customer
 * Fix: broken admin input field "Enable for shipping methods"
