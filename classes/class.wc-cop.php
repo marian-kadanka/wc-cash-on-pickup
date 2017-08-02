@@ -159,7 +159,11 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 			// Test if order needs shipping.
 			if ( 0 < sizeof( $order->get_items() ) ) {
 				foreach ( $order->get_items() as $item ) {
-					$_product = $item->get_product();
+					if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
+						$_product = $order->get_product_from_item( $item );
+					} else {
+						$_product = $item->get_product();
+					}
 					if ( $_product && $_product->needs_shipping() ) {
 						$needs_shipping = true;
 						break;
@@ -232,7 +236,11 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		$order->update_status( apply_filters( 'wc_cop_default_order_status', $this->default_order_status ) );
 
 		// Reduce stock levels
-		wc_reduce_stock_levels( $order_id );
+		if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
+			$order->reduce_order_stock();
+		} else {
+			wc_reduce_stock_levels( $order_id );
+		}
 
 		// Remove cart
 		WC()->cart->empty_cart();

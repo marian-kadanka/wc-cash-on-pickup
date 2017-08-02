@@ -32,10 +32,10 @@ The manual installation method involves downloading our plugin and uploading it 
 
 = 1.1.3 =
 * Plugin mantainer changed
-* WooCommerce 3.0+ IS NOW REQUIRED!
 * Add: option to choose default order status added
 * Add: instructions are now added to the email send to a customer
 * Fix: broken admin input field "Enable for shipping methods"
+* Fix: WooCommerce 3.0 compatibility
 * Fix: code and indentation cleanup, more code imported from WooCommerce COD gateway
 
 = 1.1.2 =
