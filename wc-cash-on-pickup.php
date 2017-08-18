@@ -6,7 +6,7 @@ Description:       A WooCommerce Extension that adds the payment gateway "Cash O
 Version:           1.2
 Author:            Marian Kadanka
 Author URI:        https://github.com/marian-kadanka
-Textdomain:        wc_cop
+Text Domain:       wc_cop
 Domain Path:       /i18n
 License:           GPL-2.0+
 License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
