@@ -14,7 +14,7 @@ A WooCommerce Extension that adds the payment gateway "Cash On Pickup"
 
 This extension will add the payment gateway "Cash on Pickup" in your WooCommerce store.
 
-= WP Installation =
+== Installation ==
 
 1. Go to Plugins > Add New > Search
 2. Type WooCommerce Cash On Pickup in the search box and hit Enter
