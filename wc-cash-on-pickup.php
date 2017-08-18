@@ -3,7 +3,7 @@
 Plugin Name:       WooCommerce Cash On Pickup
 Plugin URI:        https://wordpress.org/plugins/wc-cash-on-pickup/
 Description:       A WooCommerce Extension that adds the payment gateway "Cash On Pickup"
-Version:           1.1.3
+Version:           1.2
 Author:            Marian Kadanka
 Author URI:        https://github.com/marian-kadanka
 Textdomain:        wc_cop
@@ -71,10 +71,10 @@ add_filter( 'woocommerce_payment_gateways', 'wc_cop_register_gateway' );
  */
 function wc_cop_action_links( $links, $file ) {
 	if ( $file == plugin_basename( __FILE__ ) ) {
-		//Settings link
-		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=cop' ) . '" title="' . esc_attr__( 'Settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>' );
 		//Donate link
 		array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka" title="' . esc_attr__( 'Donate', 'wc_cop' ) . '" target="_blank">' . esc_html__( 'Donate', 'wc_cop' ) . '</a>' );
+		//Settings link
+		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=cop' ) . '" title="' . esc_attr__( 'Settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>' );
 	}
 
 	return $links;

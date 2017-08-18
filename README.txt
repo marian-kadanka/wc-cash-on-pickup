@@ -1,10 +1,10 @@
 === WooCommerce Cash On Pickup ===
 Contributors: mariankadanka
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka
-Tags: woocommerce, pickup, payment, gateway, cash, cop
+Tags: woocommerce, cash, pickup, cop, payment, gateway
 Requires at least: 3.5
-Tested up to: 4.8
-Stable tag: 1.1.3
+Tested up to: 4.8.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,9 +30,9 @@ The manual installation method involves downloading our plugin and uploading it 
 
 == Changelog ==
 
-= 1.1.3 =
+= 1.2 =
 * Plugin maintainer changed
-* Add: option to choose default order status added
+* Add: option to choose default status of new orders added
 * Add: instructions are now added to the email send to a customer
 * Fix: broken admin input field "Enable for shipping methods"
 * Fix: WooCommerce 3.0 compatibility
