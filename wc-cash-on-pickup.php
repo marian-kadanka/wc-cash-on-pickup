@@ -74,7 +74,7 @@ function wc_cop_action_links( $links, $file ) {
 		//Donate link
 		array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka" title="' . esc_attr__( 'Donate', 'wc_cop' ) . '" target="_blank">' . esc_html__( 'Donate', 'wc_cop' ) . '</a>' );
 		//Settings link
-		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=cop' ) . '" title="' . esc_attr__( 'Settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>' );
+		array_unshift( $links, '<a href="' . network_admin_url( 'admin.php?page=wc-settings&tab=checkout&section=cop' ) . '" title="' . esc_attr__( 'Settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>' );
 	}
 
 	return $links;
