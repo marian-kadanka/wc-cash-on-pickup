@@ -146,41 +146,8 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * @return bool
 	 */
 	public function is_available() {
-		$order          = null;
-		$needs_shipping = false;
-
-		// Test if shipping is needed first
-		if ( WC()->cart && WC()->cart->needs_shipping() ) {
-			$needs_shipping = true;
-		} elseif ( is_page( wc_get_page_id( 'checkout' ) ) && 0 < get_query_var( 'order-pay' ) ) {
-			$order_id = absint( get_query_var( 'order-pay' ) );
-			$order    = wc_get_order( $order_id );
-
-			// Test if order needs shipping.
-			if ( 0 < sizeof( $order->get_items() ) ) {
-				foreach ( $order->get_items() as $item ) {
-					if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
-						$_product = $order->get_product_from_item( $item );
-					} else {
-						$_product = $item->get_product();
-					}
-					if ( $_product && $_product->needs_shipping() ) {
-						$needs_shipping = true;
-						break;
-					}
-				}
-			}
-		}
-
-		$needs_shipping = apply_filters( 'woocommerce_cart_needs_shipping', $needs_shipping );
-
-		// Virtual order
-		if ( ! $needs_shipping ) {
-			return false;
-		}
-
 		// Check methods
-		if ( ! empty( $this->enable_for_methods ) && $needs_shipping ) {
+		if ( ! empty( $this->enable_for_methods ) && WC()->session ) {
 
 			// Only apply if all packages are being shipped via chosen methods, or order is virtual
 			$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' );
@@ -193,7 +160,11 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 
 			$check_method = false;
 
-			if ( is_object( $order ) ) {
+			if ( is_page( wc_get_page_id( 'checkout' ) ) && 0 < get_query_var( 'order-pay' ) ) {
+
+				$order_id = absint( get_query_var( 'order-pay' ) );
+				$order    = wc_get_order( $order_id );
+
 				if ( $order->shipping_method ) {
 					$check_method = $order->shipping_method;
 				}
