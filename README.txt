@@ -3,8 +3,8 @@ Contributors: mariankadanka
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka
 Tags: woocommerce, cash, pickup, cop, payment, gateway
 Requires at least: 3.5
-Tested up to: 4.8.1
-Stable tag: 1.2
+Tested up to: 4.9
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,10 @@ The manual installation method involves downloading our plugin and uploading it 
 1. Cash on Pickup settings page
 
 == Changelog ==
+
+= 1.3 =
+* Fix: gateway not available if shipping is disabled in WooCommerce general settings
+* Tested up to WordPress version 4.9
 
 = 1.2 =
 * Plugin maintainer changed
