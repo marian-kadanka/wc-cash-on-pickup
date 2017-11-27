@@ -4,15 +4,15 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.k
 Tags: woocommerce, cash, pickup, cop, payment, gateway
 Requires at least: 3.5
 Tested up to: 4.9
-Stable tag: 1.3
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A WooCommerce Extension that adds the payment gateway "Cash On Pickup"
+Have your customers pay with cash on pickup
 
 == Description ==
 
-This extension will add the payment gateway "Cash on Pickup" in your WooCommerce store.
+Accept "cash on pickup" payment method on your WooCommerce store.
 
 == Installation ==
 
@@ -29,6 +29,9 @@ The manual installation method involves downloading our plugin and uploading it 
 1. Cash on Pickup settings page
 
 == Changelog ==
+
+= 1.3.1 =
+* Fix: wpml-config.xml fix
 
 = 1.3 =
 * Fix: gateway not available if shipping is disabled in WooCommerce general settings
