@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.k
 Tags: woocommerce, cash, pickup, cop, payment, gateway
 Requires at least: 3.5
 Tested up to: 4.9
-Stable tag: 1.3.1
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,6 +13,15 @@ Have your customers pay with cash on pickup
 == Description ==
 
 Accept "cash on pickup" payment method on your WooCommerce store.
+
+Features:
+
+* customizable instructions are printed on the checkout and "thank you" page, and added to the email sent to the customer
+* ability to make the cash on pickup the only payment method available if the customer chooses the local pickup "shipping" on the checkout page
+* it's possible to make the cash on pickup payment available only for some of the shipping methods
+* option to select the status of new orders that are paid on pickup
+* Local Pickup Plus compatible
+* WPML support
 
 == Installation ==
 
@@ -29,6 +38,9 @@ The manual installation method involves downloading our plugin and uploading it 
 1. Cash on Pickup settings page
 
 == Changelog ==
+
+= 1.4 =
+* Add: option to disable other payment methods if local pickup "shipping" is selected on the checkout page
 
 = 1.3.1 =
 * Fix: wpml-config.xml fix
