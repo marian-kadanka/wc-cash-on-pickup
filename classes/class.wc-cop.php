@@ -50,17 +50,76 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		$this->init_settings();
 
 		// Get settings
+		$this->enabled              = $this->get_option( 'enabled' );
 		$this->title                = $this->get_option( 'title' );
 		$this->description          = $this->get_option( 'description' );
 		$this->instructions         = $this->get_option( 'instructions' );
 		$this->enable_for_methods   = $this->get_option( 'enable_for_methods', array() );
 		$this->default_order_status = $this->get_option( 'default_order_status', apply_filters( 'wc_cop_default_order_status', 'on-hold') );
+		$this->exclusive_for_local  = $this->get_option( 'exclusive_for_local' );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 
 		// Customer Emails
 		add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
+
+		// Disable other payment methods if local pickup shippings
+		if ( 'yes' === $this->enabled && 'yes' === $this->exclusive_for_local ) {
+			add_filter( 'woocommerce_available_payment_gateways', array( $this, 'maybe_cop_only_if_local_pickup_shipping' ) );
+		}
+	}
+
+	/**
+	 * Get part of a string before :.
+	 *
+	 * Used for example in shipping methods ids where they take the format
+	 * method_id:instance_id
+	 *
+	 * @param  string $string
+	 * @return string
+	 */
+	private function get_string_before_colon( $string ) {
+		return trim( current( explode( ':', (string) $string ) ) );
+	}
+
+	/**
+	 * Check if each of the shipping methods chosen is local pickup only
+	 *
+	 * @return bool
+	 */
+	private function only_local_pickups_selected() {
+		$chosen_shipping_rates = WC()->session->get( 'chosen_shipping_methods' );
+
+		// Local Pickup Plus fix
+		unset( $chosen_shipping_rates["undefined"] );
+
+		foreach( $chosen_shipping_rates as $chosen_shipping_rate )  {
+			if ( strpos( $chosen_shipping_rate, 'local_pickup' ) === false ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * COP will be the only payment method available if each of the shipping methods chosen is local pickup only
+	 *
+	 * @param array $gateways Payment methods to filter.
+	 * @return array of filtered methods
+	 */
+	public function maybe_cop_only_if_local_pickup_shipping( $gateways ) {
+		if ( $this->only_local_pickups_selected() ) {
+			if ( isset( $gateways['cop'] ) ) {
+				return array( 'cop' => $gateways['cop'] );
+			}
+			else {
+				return array();
+			}
+		}
+
+		return $gateways;
 	}
 
 	/**
@@ -137,6 +196,13 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 				'default'     => apply_filters( 'wc_cop_default_order_status', 'on-hold' ),
 				'options'     => $order_statuses,
 			),
+			'exclusive_for_local' => array(
+				'title'       => __( 'Disable other payment methods if local pickup', 'wc_cop' ),
+				'label'       => __( 'Cash on pickup will be the only payment method available if local pickup is selected on checkout', 'wc_cop' ),
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no',
+			),
 		);
 	}
 
@@ -146,48 +212,30 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * @return bool
 	 */
 	public function is_available() {
+
+		// Quit early if not enabled
+		if ( 'yes' !== $this->enabled ) {
+			return false;
+		}
+
 		// Check methods
-		if ( ! empty( $this->enable_for_methods ) && WC()->session ) {
-
-			// Only apply if all packages are being shipped via chosen methods, or order is virtual
-			$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' );
-
-			if ( isset( $chosen_shipping_methods_session ) ) {
-				$chosen_shipping_methods = array_unique( $chosen_shipping_methods_session );
-			} else {
-				$chosen_shipping_methods = array();
-			}
-
-			$check_method = false;
+		if ( ! empty( $this->enable_for_methods ) && WC()->session && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected() ) ) {
+			
+			$chosen_shipping_methods = array();
 
 			if ( is_page( wc_get_page_id( 'checkout' ) ) && 0 < get_query_var( 'order-pay' ) ) {
-
 				$order_id = absint( get_query_var( 'order-pay' ) );
 				$order    = wc_get_order( $order_id );
-
-				if ( $order->shipping_method ) {
-					$check_method = $order->shipping_method;
-				}
-			} elseif ( empty( $chosen_shipping_methods ) || sizeof( $chosen_shipping_methods ) > 1 ) {
-				$check_method = false;
-			} elseif ( sizeof( $chosen_shipping_methods ) == 1 ) {
-				$check_method = $chosen_shipping_methods[0];
+				
+				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $order->get_shipping_methods() ) );
+			} elseif ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) {
+				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $chosen_shipping_methods_session ) );
 			}
 
-			if ( ! $check_method ) {
-				return false;
-			}
+			// Local Pickup Plus fix
+			unset( $chosen_shipping_methods["undefined"] );
 
-			$found = false;
-
-			foreach ( $this->enable_for_methods as $method_id ) {
-				if ( strpos( $check_method, $method_id ) === 0 ) {
-					$found = true;
-					break;
-				}
-			}
-
-			if ( ! $found ) {
+			if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) ) {
 				return false;
 			}
 		}
