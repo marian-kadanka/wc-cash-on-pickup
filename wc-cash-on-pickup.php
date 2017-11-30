@@ -3,7 +3,7 @@
 Plugin Name:       WooCommerce Cash On Pickup
 Plugin URI:        https://wordpress.org/plugins/wc-cash-on-pickup/
 Description:       A WooCommerce Extension that adds the payment gateway "Cash On Pickup"
-Version:           1.4
+Version:           1.4.1
 Author:            Marian Kadanka
 Author URI:        https://github.com/marian-kadanka
 Text Domain:       wc-cash-on-pickup
