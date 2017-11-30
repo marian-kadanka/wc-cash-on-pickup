@@ -40,7 +40,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * Constructor for the gateway.
 	 */
 	public function __construct() {
-		load_plugin_textdomain( 'wc_cop', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/i18n/' );
+		load_plugin_textdomain( 'wc-cash-on-pickup', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/i18n/' );
 
 		// Setup general properties
 		$this->setup_properties();
@@ -128,8 +128,8 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	protected function setup_properties() {
 		$this->id                 = 'cop';
 		$this->icon               = apply_filters( 'woocommerce_cop_icon', '' );
-		$this->method_title       = __( 'Cash on pickup', 'wc_cop' );
-		$this->method_description = __( 'Have your customers pay with cash (or by other means) on pickup.', 'wc_cop' );
+		$this->method_title       = __( 'Cash on pickup', 'wc-cash-on-pickup' );
+		$this->method_description = __( 'Have your customers pay with cash (or by other means) on pickup.', 'wc-cash-on-pickup' );
 		$this->has_fields         = false;
 	}
 
@@ -154,7 +154,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		$this->form_fields = array(
 			'enabled' => array(
 				'title'       => __( 'Enable/Disable', 'woocommerce' ),
-				'label'       => __( 'Enable cash on pickup', 'wc_cop' ),
+				'label'       => __( 'Enable cash on pickup', 'wc-cash-on-pickup' ),
 				'type'        => 'checkbox',
 				'description' => '',
 				'default'     => 'no',
@@ -163,21 +163,21 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 				'title'       => __( 'Title', 'woocommerce' ),
 				'type'        => 'text',
 				'description' => __( 'Payment method description that the customer will see on your checkout.', 'woocommerce' ),
-				'default'     => __( 'Cash on pickup', 'wc_cop' ),
+				'default'     => __( 'Cash on pickup', 'wc-cash-on-pickup' ),
 				'desc_tip'    => true,
 			),
 			'description' => array(
 				'title'       => __( 'Description', 'woocommerce' ),
 				'type'        => 'textarea',
 				'description' => __( 'Payment method description that the customer will see on your website.', 'woocommerce' ),
-				'default'     => __( 'Pay with cash on pickup.', 'wc_cop' ),
+				'default'     => __( 'Pay with cash on pickup.', 'wc-cash-on-pickup' ),
 				'desc_tip'    => true,
 			),
 			'instructions' => array(
 				'title'       => __( 'Instructions', 'woocommerce' ),
 				'type'        => 'textarea',
 				'description' => __( 'Instructions that will be added to the thank you page.', 'woocommerce' ),
-				'default'     => __( 'Pay with cash on pickup.', 'wc_cop' ),
+				'default'     => __( 'Pay with cash on pickup.', 'wc-cash-on-pickup' ),
 				'desc_tip'    => true,
 			),
 			'enable_for_methods' => array(
@@ -186,19 +186,19 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 				'class'       => 'chosen_select',
 				'css'         => 'width: 450px;',
 				'default'     => '',
-				'description' => __( 'If COP is only available for certain methods, set it up here. Leave blank to enable for all methods.', 'wc_cop' ),
+				'description' => __( 'If COP is only available for certain methods, set it up here. Leave blank to enable for all methods.', 'wc-cash-on-pickup' ),
 				'options'     => $shipping_methods,
 				'desc_tip'    => true,
 			),
 			'default_order_status' => array(
-				'title'       => __( 'Default order status', 'wc_cop' ),
+				'title'       => __( 'Default order status', 'wc-cash-on-pickup' ),
 				'type'        => 'select',
 				'default'     => apply_filters( 'wc_cop_default_order_status', 'on-hold' ),
 				'options'     => $order_statuses,
 			),
 			'exclusive_for_local' => array(
-				'title'       => __( 'Disable other payment methods if local pickup', 'wc_cop' ),
-				'label'       => __( 'Cash on pickup will be the only payment method available if local pickup is selected on checkout', 'wc_cop' ),
+				'title'       => __( 'Disable other payment methods if local pickup', 'wc-cash-on-pickup' ),
+				'label'       => __( 'Cash on pickup will be the only payment method available if local pickup is selected on checkout', 'wc-cash-on-pickup' ),
 				'type'        => 'checkbox',
 				'description' => '',
 				'default'     => 'no',

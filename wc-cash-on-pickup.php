@@ -6,7 +6,7 @@ Description:       A WooCommerce Extension that adds the payment gateway "Cash O
 Version:           1.4
 Author:            Marian Kadanka
 Author URI:        https://github.com/marian-kadanka
-Text Domain:       wc_cop
+Text Domain:       wc-cash-on-pickup
 Domain Path:       /i18n
 License:           GPL-2.0+
 License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -72,7 +72,7 @@ add_filter( 'woocommerce_payment_gateways', 'wc_cop_register_gateway' );
 function wc_cop_action_links( $links, $file ) {
 	if ( $file == plugin_basename( __FILE__ ) ) {
 		//Donate link
-		array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka" title="' . esc_attr__( 'Donate', 'wc_cop' ) . '" target="_blank">' . esc_html__( 'Donate', 'wc_cop' ) . '</a>' );
+		array_unshift( $links, '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka" title="' . esc_attr__( 'Donate', 'wc-cash-on-pickup' ) . '" target="_blank">' . esc_html__( 'Donate', 'wc-cash-on-pickup' ) . '</a>' );
 		//Settings link
 		array_unshift( $links, '<a href="' . network_admin_url( 'admin.php?page=wc-settings&tab=checkout&section=cop' ) . '" title="' . esc_attr__( 'Settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>' );
 	}
