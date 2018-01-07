@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.k
 Tags: woocommerce, cash, pickup, cop, payment, gateway
 Requires at least: 3.5
 Tested up to: 4.9
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,9 @@ The manual installation method involves downloading our plugin and uploading it 
 1. Cash on Pickup settings page
 
 == Changelog ==
+
+= 1.4.2 =
+* Fix: Menus editor not showing, due to woocommerce_available_payment_gateways filter hook firing in the admin
 
 = 1.4.1 =
 * Fix: Rename the text domain to comply with the language packs requirements
