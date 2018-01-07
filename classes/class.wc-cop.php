@@ -64,9 +64,13 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		// Customer Emails
 		add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
 
-		// Disable other payment methods if local pickup shippings
-		if ( 'yes' === $this->enabled && 'yes' === $this->exclusive_for_local ) {
-			add_filter( 'woocommerce_available_payment_gateways', array( $this, 'maybe_cop_only_if_local_pickup_shipping' ) );
+		if ( ! is_admin() ) {
+
+			// Disable other payment methods if local pickup shippings
+			if ( 'yes' === $this->enabled && 'yes' === $this->exclusive_for_local ) {
+				add_filter( 'woocommerce_available_payment_gateways', array( $this, 'maybe_cop_only_if_local_pickup_shipping' ) );
+			}
+
 		}
 	}
 
