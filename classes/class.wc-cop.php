@@ -88,18 +88,18 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Check if each of the shipping methods chosen is local pickup only
+	 * Check if every of the shipping methods is local pickup
 	 *
+	 * @param array $shipping_methods Shipping methods to check.
 	 * @return bool
 	 */
-	private function only_local_pickups_selected() {
-		$chosen_shipping_rates = WC()->session->get( 'chosen_shipping_methods' );
+	private function only_local_pickups_selected( $shipping_methods ) {
 
 		// Local Pickup Plus fix
-		unset( $chosen_shipping_rates["undefined"] );
+		unset( $shipping_methods["undefined"] );
 
-		foreach( $chosen_shipping_rates as $chosen_shipping_rate )  {
-			if ( strpos( $chosen_shipping_rate, 'local_pickup' ) === false ) {
+		foreach( $shipping_methods as $shipping_method )  {
+			if ( strpos( $shipping_method, 'local_pickup' ) === false ) {
 				return false;
 			}
 		}
@@ -114,12 +114,15 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * @return array of filtered methods
 	 */
 	public function maybe_cop_only_if_local_pickup_shipping( $gateways ) {
-		if ( $this->only_local_pickups_selected() ) {
-			if ( isset( $gateways['cop'] ) ) {
-				return array( 'cop' => $gateways['cop'] );
-			}
-			else {
-				return array();
+		if ( WC()->session ) {
+			$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ); 
+			if ( $chosen_shipping_methods_session && $this->only_local_pickups_selected( $chosen_shipping_methods_session ) ) {
+				if ( isset( $gateways['cop'] ) ) {
+					return array( 'cop' => $gateways['cop'] );
+				}
+				else {
+					return array();
+				}
 			}
 		}
 
@@ -218,33 +221,33 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	public function is_available() {
 
 		// Quit early if not enabled
-		if ( 'yes' !== $this->enabled ) {
+		if ( ! parent::is_available() ) {
 			return false;
 		}
 
 		// Check methods
-		if ( ! empty( $this->enable_for_methods ) && WC()->session && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected() ) ) {
-			
+		if ( ! empty( $this->enable_for_methods ) && ! is_admin() ) {
+
 			$chosen_shipping_methods = array();
 
 			if ( is_page( wc_get_page_id( 'checkout' ) ) && 0 < get_query_var( 'order-pay' ) ) {
 				$order_id = absint( get_query_var( 'order-pay' ) );
 				$order    = wc_get_order( $order_id );
-				
+
 				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $order->get_shipping_methods() ) );
-			} elseif ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) {
+			} elseif ( WC()->session && ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) ) {
 				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $chosen_shipping_methods_session ) );
 			}
 
 			// Local Pickup Plus fix
 			unset( $chosen_shipping_methods["undefined"] );
 
-			if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) ) {
+			if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $chosen_shipping_methods ) ) ) {
 				return false;
 			}
 		}
 
-		return parent::is_available();
+		return true;
 	}
 
 	/**
