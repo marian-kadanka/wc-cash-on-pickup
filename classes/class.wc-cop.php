@@ -262,10 +262,10 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		$order->update_status( apply_filters( 'wc_cop_default_order_status', $this->default_order_status ) );
 
 		// Reduce stock levels
-		if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
-			$order->reduce_order_stock();
-		} else {
+		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
 			wc_reduce_stock_levels( $order_id );
+		} else {
+			$order->reduce_order_stock();
 		}
 
 		// Remove cart
@@ -296,7 +296,8 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * @param bool $plain_text
 	 */
 	public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
-		if ( $this->instructions && ! $sent_to_admin && $this->id === $order->get_payment_method() && $order->has_status( $this->default_order_status ) ) {
+		$payment_method = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_payment_method() : $order->payment_method;
+		if ( $this->instructions && ! $sent_to_admin && $this->id === $payment_method && $order->has_status( $this->default_order_status ) ) {
 			echo wpautop( wptexturize( $this->instructions ) ) . PHP_EOL;
 		}
 	}
