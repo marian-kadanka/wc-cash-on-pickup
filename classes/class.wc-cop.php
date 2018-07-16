@@ -283,7 +283,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 */
 	public function thankyou_page() {
 		if ( $this->instructions ) {
-			echo wpautop( wptexturize( $this->instructions ) );
+			echo wp_kses_post( wpautop( wptexturize( $this->instructions ) ) );
 		}
 	}
 
@@ -298,7 +298,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
 		$payment_method = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_payment_method() : $order->payment_method;
 		if ( $this->instructions && ! $sent_to_admin && $this->id === $payment_method && $order->has_status( $this->default_order_status ) ) {
-			echo wpautop( wptexturize( $this->instructions ) ) . PHP_EOL;
+			echo wp_kses_post( wpautop( wptexturize( $this->instructions ) ) . PHP_EOL );
 		}
 	}
 }
