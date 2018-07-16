@@ -2,7 +2,7 @@
 /**
  * WooCommerce Cash On Pickup
  * Copyright (C) 2013-2014 Pinch Of Code. All rights reserved.
- * Copyright (C) 2017 Marian Kadanka. All rights reserved.
+ * Copyright (C) 2017-2018 Marian Kadanka. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
