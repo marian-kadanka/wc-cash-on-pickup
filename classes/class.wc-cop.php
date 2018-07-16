@@ -57,6 +57,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		$this->enable_for_methods   = $this->get_option( 'enable_for_methods', array() );
 		$this->default_order_status = $this->get_option( 'default_order_status', apply_filters( 'wc_cop_default_order_status', 'on-hold') );
 		$this->exclusive_for_local  = $this->get_option( 'exclusive_for_local' );
+		$this->enable_for_virtual   = $this->get_option( 'enable_for_virtual', 'yes' ) === 'yes' ? true : false;
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
@@ -210,6 +211,12 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 				'description' => '',
 				'default'     => 'no',
 			),
+			'enable_for_virtual' => array(
+				'title'       => __( 'Accept for virtual orders', 'woocommerce' ),
+				'label'       => __( 'Accept COP if the order is virtual', 'wc-cash-on-pickup' ),
+				'type'        => 'checkbox',
+				'default'     => 'yes',
+			),
 		);
 	}
 
@@ -219,23 +226,46 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * @return bool
 	 */
 	public function is_available() {
+		$order          = null;
+		$needs_shipping = false;
 
-		// Quit early if not enabled
-		if ( ! parent::is_available() ) {
+		// Test if shipping is needed first
+		if ( WC()->cart && WC()->cart->needs_shipping() ) {
+			$needs_shipping = true;
+		} elseif ( is_page( wc_get_page_id( 'checkout' ) ) && 0 < get_query_var( 'order-pay' ) ) {
+			$order_id = absint( get_query_var( 'order-pay' ) );
+			$order    = wc_get_order( $order_id );
+
+			// Test if order needs shipping.
+			if ( 0 < sizeof( $order->get_items() ) ) {
+				foreach ( $order->get_items() as $item ) {
+					if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
+						$_product = $order->get_product_from_item( $item );
+					} else {
+						$_product = $item->get_product();
+					}
+					if ( $_product && $_product->needs_shipping() ) {
+						$needs_shipping = true;
+						break;
+					}
+				}
+			}
+		}
+
+		$needs_shipping = apply_filters( 'woocommerce_cart_needs_shipping', $needs_shipping );
+
+		// Virtual order, with virtual disabled
+		if ( ! $this->enable_for_virtual && ! $needs_shipping ) {
 			return false;
 		}
 
-		// Check methods
-		if ( ! empty( $this->enable_for_methods ) && ! is_admin() ) {
-
+		// Only apply if all packages are being shipped via chosen method, or order is virtual.
+		if ( ! empty( $this->enable_for_methods ) && $needs_shipping ) {
 			$chosen_shipping_methods = array();
 
-			if ( is_page( wc_get_page_id( 'checkout' ) ) && 0 < get_query_var( 'order-pay' ) ) {
-				$order_id = absint( get_query_var( 'order-pay' ) );
-				$order    = wc_get_order( $order_id );
-
+			if ( is_object( $order ) ) {
 				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $order->get_shipping_methods() ) );
-			} elseif ( WC()->session && ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) ) {
+			} elseif ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) {
 				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $chosen_shipping_methods_session ) );
 			}
 
@@ -247,7 +277,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 			}
 		}
 
-		return true;
+		return parent::is_available();
 	}
 
 	/**
