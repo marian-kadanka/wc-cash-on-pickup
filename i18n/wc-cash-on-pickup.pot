@@ -1,7 +1,8 @@
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce Cash on Pickup\n"
-"POT-Creation-Date: 2017-11-29 20:59+0100\n"
+"POT-Creation-Date: 2018-07-16 16:31+0200\n"
 "PO-Revision-Date: 2017-08-18 13:47+0200\n"
 "Last-Translator: Nicola Mustone <nicola.mustone@ecomstore.net>\n"
 "Language-Team: Nicola Mustone <mustone.nicola@gmail.com>\n"
@@ -16,42 +17,46 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e;esc_attr__;esc_html__\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: classes/class.wc-cop.php:131 classes/class.wc-cop.php:166
+#: classes/class.wc-cop.php:139 classes/class.wc-cop.php:174
 msgid "Cash on pickup"
 msgstr ""
 
-#: classes/class.wc-cop.php:132
+#: classes/class.wc-cop.php:140
 msgid "Have your customers pay with cash (or by other means) on pickup."
 msgstr ""
 
-#: classes/class.wc-cop.php:157
+#: classes/class.wc-cop.php:165
 msgid "Enable cash on pickup"
 msgstr ""
 
-#: classes/class.wc-cop.php:173 classes/class.wc-cop.php:180
+#: classes/class.wc-cop.php:181 classes/class.wc-cop.php:188
 msgid "Pay with cash on pickup."
 msgstr ""
 
-#: classes/class.wc-cop.php:189
+#: classes/class.wc-cop.php:197
 msgid ""
 "If COP is only available for certain methods, set it up here. Leave blank to "
 "enable for all methods."
 msgstr ""
 
-#: classes/class.wc-cop.php:194
+#: classes/class.wc-cop.php:202
 msgid "Default order status"
 msgstr ""
 
-#: classes/class.wc-cop.php:200
+#: classes/class.wc-cop.php:208
 msgid "Disable other payment methods if local pickup"
 msgstr ""
 
-#: classes/class.wc-cop.php:201
+#: classes/class.wc-cop.php:209
 msgid ""
 "Cash on pickup will be the only payment method available if local pickup is "
 "selected on checkout"
 msgstr ""
 
-#: wc-cash-on-pickup.php:75
+#: classes/class.wc-cop.php:216
+msgid "Accept COP if the order is virtual"
+msgstr ""
+
+#: wc-cash-on-pickup.php:76
 msgid "Donate"
 msgstr ""
