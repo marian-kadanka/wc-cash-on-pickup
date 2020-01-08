@@ -40,7 +40,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * Constructor for the gateway.
 	 */
 	public function __construct() {
-		load_plugin_textdomain( 'wc-cash-on-pickup', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/i18n/' );
+		load_plugin_textdomain( 'wc-cash-on-pickup', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/' );
 
 		// Setup general properties
 		$this->setup_properties();
@@ -149,8 +149,49 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		$order_statuses = array();
 
 		if ( is_admin() ) {
-			foreach ( WC()->shipping->load_shipping_methods() as $method ) {
-				$shipping_methods[ $method->id ] = $method->get_method_title();
+			if ( version_compare( WC_VERSION, '3.4', '>=' ) ) {
+				$data_store = WC_Data_Store::load( 'shipping-zone' );
+				$raw_zones  = $data_store->get_zones();
+
+				foreach ( $raw_zones as $raw_zone ) {
+					$zones[] = new WC_Shipping_Zone( $raw_zone );
+				}
+
+				$zones[] = new WC_Shipping_Zone( 0 );
+
+				foreach ( WC()->shipping()->load_shipping_methods() as $method ) {
+
+					$shipping_methods[ $method->get_method_title() ] = array();
+
+					// Translators: %1$s shipping method name.
+					$shipping_methods[ $method->get_method_title() ][ $method->id ] = sprintf( __( 'Any &quot;%1$s&quot; method', 'woocommerce' ), $method->get_method_title() );
+
+					foreach ( $zones as $zone ) {
+
+						$shipping_method_instances = $zone->get_shipping_methods();
+
+						foreach ( $shipping_method_instances as $shipping_method_instance_id => $shipping_method_instance ) {
+
+							if ( $shipping_method_instance->id !== $method->id ) {
+								continue;
+							}
+
+							$option_id = $shipping_method_instance->get_rate_id();
+
+							// Translators: %1$s shipping method title, %2$s shipping method id.
+							$option_instance_title = sprintf( __( '%1$s (#%2$s)', 'woocommerce' ), $shipping_method_instance->get_title(), $shipping_method_instance_id );
+
+							// Translators: %1$s zone name, %2$s shipping method instance name.
+							$option_title = sprintf( __( '%1$s &ndash; %2$s', 'woocommerce' ), $zone->get_id() ? $zone->get_zone_name() : __( 'Other locations', 'woocommerce' ), $option_instance_title );
+
+							$shipping_methods[ $method->get_method_title() ][ $option_id ] = $option_title;
+						}
+					}
+				}
+			} else {
+				foreach ( WC()->shipping->load_shipping_methods() as $method ) {
+					$shipping_methods[ $method->id ] = $method->get_method_title();
+				}
 			}
 
 			$statuses = function_exists( 'wc_get_order_statuses' ) ? wc_get_order_statuses() : array();
@@ -260,24 +301,98 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		}
 
 		// Only apply if all packages are being shipped via chosen method, or order is virtual.
-		if ( ! empty( $this->enable_for_methods ) && $needs_shipping ) {
-			$chosen_shipping_methods = array();
-
-			if ( is_object( $order ) ) {
-				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $order->get_shipping_methods() ) );
-			} elseif ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) {
-				$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $chosen_shipping_methods_session ) );
+		if ( version_compare( WC_VERSION, '3.4', '>=' ) ) {
+			if ( ! empty( $this->enable_for_methods ) && $needs_shipping ) {
+				$order_shipping_items            = is_object( $order ) ? $order->get_shipping_methods() : false;
+				$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' );
+	
+				if ( $order_shipping_items ) {
+					$canonical_rate_ids = $this->get_canonical_order_shipping_item_rate_ids( $order_shipping_items );
+				} else {
+					$canonical_rate_ids = $this->get_canonical_package_rate_ids( $chosen_shipping_methods_session );
+				}
+	
+				if ( ! count( $this->get_matching_rates( $canonical_rate_ids ) )  && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $chosen_shipping_methods ) ) ) {
+					return false;
+				}
 			}
-
-			// Local Pickup Plus fix
-			unset( $chosen_shipping_methods["undefined"] );
-
-			if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $chosen_shipping_methods ) ) ) {
-				return false;
+		} else {
+			if ( ! empty( $this->enable_for_methods ) && $needs_shipping ) {
+				$chosen_shipping_methods = array();
+				
+				if ( is_object( $order ) ) {
+					$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $order->get_shipping_methods() ) );
+				} elseif ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) {
+					$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $chosen_shipping_methods_session ) );
+				}
+	
+				// Local Pickup Plus fix
+				unset( $chosen_shipping_methods["undefined"] );
+	
+				if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $chosen_shipping_methods ) ) ) {
+					return false;
+				}
 			}
 		}
 
 		return parent::is_available();
+	}
+
+	/**
+	 * Converts the chosen rate IDs generated by Shipping Methods to a canonical 'method_id:instance_id' format.
+	 *
+	 * @since  3.4.0
+	 *
+	 * @param  array $order_shipping_items  Array of WC_Order_Item_Shipping objects.
+	 * @return array $canonical_rate_ids    Rate IDs in a canonical format.
+	 */
+	private function get_canonical_order_shipping_item_rate_ids( $order_shipping_items ) {
+
+		$canonical_rate_ids = array();
+
+		foreach ( $order_shipping_items as $order_shipping_item ) {
+			$canonical_rate_ids[] = $order_shipping_item->get_method_id() . ':' . $order_shipping_item->get_instance_id();
+		}
+
+		return $canonical_rate_ids;
+	}
+
+	/**
+	 * Converts the chosen rate IDs generated by Shipping Methods to a canonical 'method_id:instance_id' format.
+	 *
+	 * @since  3.4.0
+	 *
+	 * @param  array $chosen_package_rate_ids Rate IDs as generated by shipping methods. Can be anything if a shipping method doesn't honor WC conventions.
+	 * @return array $canonical_rate_ids  Rate IDs in a canonical format.
+	 */
+	private function get_canonical_package_rate_ids( $chosen_package_rate_ids ) {
+
+		$shipping_packages  = WC()->shipping->get_packages();
+		$canonical_rate_ids = array();
+
+		if ( ! empty( $chosen_package_rate_ids ) && is_array( $chosen_package_rate_ids ) ) {
+			foreach ( $chosen_package_rate_ids as $package_key => $chosen_package_rate_id ) {
+				if ( ! empty( $shipping_packages[ $package_key ]['rates'][ $chosen_package_rate_id ] ) ) {
+					$chosen_rate          = $shipping_packages[ $package_key ]['rates'][ $chosen_package_rate_id ];
+					$canonical_rate_ids[] = $chosen_rate->get_method_id() . ':' . $chosen_rate->get_instance_id();
+				}
+			}
+		}
+
+		return $canonical_rate_ids;
+	}
+
+	/**
+	 * Indicates whether a rate exists in an array of canonically-formatted rate IDs that activates this gateway.
+	 *
+	 * @since  3.4.0
+	 *
+	 * @param array $rate_ids Rate ids to check.
+	 * @return boolean
+	 */
+	private function get_matching_rates( $rate_ids ) {
+		// First, match entries in 'method_id:instance_id' format. Then, match entries in 'method_id' format by stripping off the instance ID from the candidates.
+		return array_unique( array_merge( array_intersect( $this->enable_for_methods, $rate_ids ), array_intersect( $this->enable_for_methods, array_unique( array_map( 'wc_get_string_before_colon', $rate_ids ) ) ) ) );
 	}
 
 	/**
