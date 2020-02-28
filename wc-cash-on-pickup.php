@@ -11,7 +11,7 @@ Domain Path:       /i18n
 License:           GPL-2.0+
 License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
 GitHub Plugin URI: https://github.com/marian-kadanka/wc-cash-on-pickup
-WC tested up to:   3.8.1
+WC tested up to:   3.9.2
 */
 
 /**
