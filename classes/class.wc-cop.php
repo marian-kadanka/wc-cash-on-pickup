@@ -189,7 +189,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 					}
 				}
 			} else {
-				foreach ( WC()->shipping->load_shipping_methods() as $method ) {
+				foreach ( WC()->shipping()->load_shipping_methods() as $method ) {
 					$shipping_methods[ $method->id ] = $method->get_method_title();
 				}
 			}
@@ -278,7 +278,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 			$order    = wc_get_order( $order_id );
 
 			// Test if order needs shipping.
-			if ( 0 < sizeof( $order->get_items() ) ) {
+			if ( 0 < count( $order->get_items() ) ) {
 				foreach ( $order->get_items() as $item ) {
 					if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
 						$_product = $order->get_product_from_item( $item );
@@ -311,8 +311,8 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 				} else {
 					$canonical_rate_ids = $this->get_canonical_package_rate_ids( $chosen_shipping_methods_session );
 				}
-	
-				if ( ! count( $this->get_matching_rates( $canonical_rate_ids ) )  && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $chosen_shipping_methods ) ) ) {
+
+				if ( ! count( $this->get_matching_rates( $canonical_rate_ids ) ) && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $canonical_rate_ids ) ) ) {
 					return false;
 				}
 			}
@@ -367,7 +367,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 */
 	private function get_canonical_package_rate_ids( $chosen_package_rate_ids ) {
 
-		$shipping_packages  = WC()->shipping->get_packages();
+		$shipping_packages  = WC()->shipping()->get_packages();
 		$canonical_rate_ids = array();
 
 		if ( ! empty( $chosen_package_rate_ids ) && is_array( $chosen_package_rate_ids ) ) {
