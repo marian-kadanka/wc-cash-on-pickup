@@ -57,7 +57,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		$this->enable_for_methods   = $this->get_option( 'enable_for_methods', array() );
 		$this->default_order_status = $this->get_option( 'default_order_status', apply_filters( 'wc_cop_default_order_status', 'on-hold') );
 		$this->exclusive_for_local  = $this->get_option( 'exclusive_for_local' );
-		$this->enable_for_virtual   = $this->get_option( 'enable_for_virtual', 'yes' ) === 'yes' ? true : false;
+		$this->enable_for_virtual   = $this->get_option( 'enable_for_virtual', 'yes' ) === 'yes';
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
@@ -115,14 +115,11 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 * @return array of filtered methods
 	 */
 	public function maybe_cop_only_if_local_pickup_shipping( $gateways ) {
-		if ( WC()->session ) {
+		if ( WC()->session && $this->is_available() ) {
 			$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ); 
 			if ( $chosen_shipping_methods_session && $this->only_local_pickups_selected( $chosen_shipping_methods_session ) ) {
 				if ( isset( $gateways['cop'] ) ) {
 					return array( 'cop' => $gateways['cop'] );
-				}
-				else {
-					return array();
 				}
 			}
 		}
@@ -278,7 +275,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 			$order    = wc_get_order( $order_id );
 
 			// Test if order needs shipping.
-			if ( 0 < count( $order->get_items() ) ) {
+			if ( $order && 0 < count( $order->get_items() ) ) {
 				foreach ( $order->get_items() as $item ) {
 					if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
 						$_product = $order->get_product_from_item( $item );
@@ -312,7 +309,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 					$canonical_rate_ids = $this->get_canonical_package_rate_ids( $chosen_shipping_methods_session );
 				}
 
-				if ( ! count( $this->get_matching_rates( $canonical_rate_ids ) ) && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $canonical_rate_ids ) ) ) {
+				if ( ! count( $this->get_matching_rates( $canonical_rate_ids ) ) ) {
 					return false;
 				}
 			}
@@ -329,7 +326,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 				// Local Pickup Plus fix
 				unset( $chosen_shipping_methods["undefined"] );
 	
-				if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) && ! ( 'yes' === $this->exclusive_for_local && $this->only_local_pickups_selected( $chosen_shipping_methods ) ) ) {
+				if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) ) {
 					return false;
 				}
 			}

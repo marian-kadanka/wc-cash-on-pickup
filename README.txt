@@ -3,8 +3,8 @@ Contributors: mariankadanka
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka
 Tags: woocommerce, cash, pickup, cop, payment, gateway
 Requires at least: 3.5
-Tested up to: 5.5
-Stable tag: 1.6
+Tested up to: 5.9
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,10 @@ The manual installation method involves downloading our plugin and uploading it 
 1. Cash on Pickup settings page
 
 == Changelog ==
+
+= 1.6.1 =
+* Fix: don't disable other payment methods if Cash On Pickup itself isn't available
+* Tested up to WordPress version 5.9, WooCommerce version 6.3
 
 = 1.6 =
 * Add: support for shipping zones introduced in WooCommerce 3.4, props Peter Morvay
