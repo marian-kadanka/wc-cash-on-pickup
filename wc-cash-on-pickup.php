@@ -3,7 +3,7 @@
 Plugin Name:       WooCommerce Cash On Pickup
 Plugin URI:        https://wordpress.org/plugins/wc-cash-on-pickup/
 Description:       A WooCommerce Extension that adds the payment gateway "Cash On Pickup"
-Version:           1.6.1
+Version:           1.7.0
 Author:            Marian Kadanka
 Author URI:        https://kadanka.net/
 Text Domain:       wc-cash-on-pickup
@@ -11,7 +11,7 @@ Domain Path:       /languages
 License:           GPL-2.0+
 License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
 GitHub Plugin URI: https://github.com/marian-kadanka/wc-cash-on-pickup
-WC tested up to:   6.3
+WC tested up to:   8.1
 */
 
 /**
@@ -81,3 +81,12 @@ function wc_cop_action_links( $links, $file ) {
 	return $links;
 }
 add_filter( 'plugin_action_links', 'wc_cop_action_links', 10, 4 );
+
+/**
+ * Declare WooCommerce HPOS compatibility.
+ */
+add_action( 'before_woocommerce_init', function() {
+	if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	}
+} );

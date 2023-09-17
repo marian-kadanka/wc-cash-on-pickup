@@ -37,6 +37,41 @@ if( ! class_exists( 'WC_Gateway_Cash_on_pickup' ) ):
 class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 
 	/**
+	 * Gateway instructions that will be added to the thank you page and emails.
+	 *
+	 * @var string
+	 */
+	public $instructions;
+
+	/**
+	 * Enable for shipping methods.
+	 *
+	 * @var array
+	 */
+	public $enable_for_methods;
+
+	/**
+	 * Default order status.
+	 *
+	 * @var string
+	 */
+	public $default_order_status;
+
+	/**
+	 * Exclusive for local pickup.
+	 *
+	 * @var string
+	 */
+	public $exclusive_for_local;
+
+	/**
+	 * Enable for virtual orders.
+	 *
+	 * @var string
+	 */
+	public $enable_for_virtual;
+
+	/**
 	 * Constructor for the gateway.
 	 */
 	public function __construct() {
