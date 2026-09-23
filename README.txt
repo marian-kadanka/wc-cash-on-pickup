@@ -1,10 +1,10 @@
-=== WooCommerce Cash On Pickup ===
+=== Cash On Pickup for WooCommerce ===
 Contributors: mariankadanka
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=marian.kadanka@gmail.com&item_name=Donation+for+Marian+Kadanka
-Tags: woocommerce, cash, pickup, cop, payment, gateway
+Tags: woocommerce, cash, pickup, payment, gateway
 Requires at least: 3.5
-Tested up to: 6.3
-Stable tag: 1.7.0
+Tested up to: 6.8
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Have your customers pay with cash on pickup
 
 == Description ==
 
-Accept "cash on pickup" payment method on your WooCommerce store.
+Accept "cash on pickup" payment method on your WooCommerce store. Works with CLASSIC checkout only.
 
 Features:
 
@@ -27,7 +27,7 @@ Features:
 == Installation ==
 
 1. Go to Plugins > Add New > Search
-2. Type WooCommerce Cash On Pickup in the search box and hit Enter
+2. Type "Cash On Pickup for WooCommerce" in the search box and hit Enter
 3. Click on the button Install and then activate the plugin
 
 = Manual Installation =
@@ -39,6 +39,10 @@ The manual installation method involves downloading our plugin and uploading it 
 1. Cash on Pickup settings page
 
 == Changelog ==
+
+= 1.7.1 =
+* Tweak: Change plugin name due to trademark violation
+* Tested up to WordPress version 6.8, WooCommerce version 10.3, PHP 8.4
 
 = 1.7.0 =
 * Add: HPOS support

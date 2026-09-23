@@ -1,8 +1,8 @@
 <?php
 /**
- * WooCommerce Cash On Pickup
+ * Cash On Pickup for WooCommerce
  * Copyright (C) 2013-2014 Pinch Of Code. All rights reserved.
- * Copyright (C) 2017-2018 Marian Kadanka. All rights reserved.
+ * Copyright (C) 2017-2025 Marian Kadanka. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -151,7 +151,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 	 */
 	public function maybe_cop_only_if_local_pickup_shipping( $gateways ) {
 		if ( WC()->session && $this->is_available() ) {
-			$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ); 
+			$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' );
 			if ( $chosen_shipping_methods_session && $this->only_local_pickups_selected( $chosen_shipping_methods_session ) ) {
 				if ( isset( $gateways['cop'] ) ) {
 					return array( 'cop' => $gateways['cop'] );
@@ -337,7 +337,7 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 			if ( ! empty( $this->enable_for_methods ) && $needs_shipping ) {
 				$order_shipping_items            = is_object( $order ) ? $order->get_shipping_methods() : false;
 				$chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' );
-	
+
 				if ( $order_shipping_items ) {
 					$canonical_rate_ids = $this->get_canonical_order_shipping_item_rate_ids( $order_shipping_items );
 				} else {
@@ -351,16 +351,16 @@ class WC_Gateway_Cash_on_pickup extends WC_Payment_Gateway {
 		} else {
 			if ( ! empty( $this->enable_for_methods ) && $needs_shipping ) {
 				$chosen_shipping_methods = array();
-				
+
 				if ( is_object( $order ) ) {
 					$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $order->get_shipping_methods() ) );
 				} elseif ( $chosen_shipping_methods_session = WC()->session->get( 'chosen_shipping_methods' ) ) {
 					$chosen_shipping_methods = array_unique( array_map( array( $this, 'get_string_before_colon' ), $chosen_shipping_methods_session ) );
 				}
-	
+
 				// Local Pickup Plus fix
 				unset( $chosen_shipping_methods["undefined"] );
-	
+
 				if ( 0 < count( array_diff( $chosen_shipping_methods, $this->enable_for_methods ) ) ) {
 					return false;
 				}
