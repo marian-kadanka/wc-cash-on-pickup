@@ -1,0 +1,44 @@
+{
+  "baseUrl": "https://testing.localhost",
+  "wpPath": "/home/www/testing",
+
+  "artifactsDir": null,
+
+  "classicCheckoutPageId": 7461,
+  "classicCheckoutPath": "/checkout/",
+  "blockCheckoutPageId": 7473,
+  "blockCheckoutPath": "/cop-block-checkout-test/",
+
+  "physicalProductId": 7302,
+  "virtualProductId": 7307,
+
+  "address": {
+    "first_name": "Cop",
+    "last_name": "Tester",
+    "address_1": "Hlavna 1",
+    "city": "Bratislava",
+    "postcode": "81101",
+    "country": "SK",
+    "email": "cop-test@example.com",
+    "phone": "0900123456"
+  },
+
+  "rates": {
+    "flatRate": "flat_rate:1",
+    "flatRateOther": "flat_rate:5",
+    "localPickup": "local_pickup:2",
+    "pickupLocation": "pickup_location:0"
+  },
+
+  "gatewaySettings": {
+    "enabled": "yes",
+    "title": "Cash on pickup TEST",
+    "description": "Pay with <strong>cash</strong> on pickup.",
+    "instructions": "COP-INSTRUCTIONS-MARKER-42 - pay in cash at the shop.",
+    "enable_for_methods": [],
+    "default_order_status": "on-hold",
+    "exclusive_for_local": "no",
+    "enable_for_virtual": "yes"
+  },
+  "instructionsMarker": "COP-INSTRUCTIONS-MARKER-42"
+}

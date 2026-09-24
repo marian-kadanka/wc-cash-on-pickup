@@ -1,119 +1,87 @@
-#, fuzzy
+# Copyright (C) 2026 Marian Kadanka
+# This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"Project-Id-Version: WooCommerce Cash On Pickup\n"
-"POT-Creation-Date: 2020-01-08 17:52+0100\n"
-"PO-Revision-Date: 2020-01-08 17:51+0100\n"
-"Last-Translator: Peter Morvay <moped@jepan.sk>\n"
-"Language-Team: Peter Morvay <moped@jepan.sk>\n"
+"Project-Id-Version: Cash On Pickup for WooCommerce 2.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-cash-on-pickup\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.4\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: wc-cash-on-pickup.php\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
-"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"POT-Creation-Date: 2026-09-24T07:40:15+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: wc-cash-on-pickup\n"
 
-#: classes/class.wc-cop.php:139 classes/class.wc-cop.php:214
-msgid "Cash on pickup"
+#. Plugin Name of the plugin
+#: wc-cash-on-pickup.php
+msgid "Cash On Pickup for WooCommerce"
 msgstr ""
 
-#: classes/class.wc-cop.php:140
-msgid "Have your customers pay with cash (or by other means) on pickup."
-msgstr ""
-
-#: classes/class.wc-cop.php:204
-msgid "Enable/Disable"
-msgstr ""
-
-#: classes/class.wc-cop.php:205
-msgid "Enable cash on pickup"
-msgstr ""
-
-#: classes/class.wc-cop.php:211
-msgid "Title"
-msgstr ""
-
-#: classes/class.wc-cop.php:213
-msgid "Payment method description that the customer will see on your checkout."
-msgstr ""
-
-#: classes/class.wc-cop.php:218
-msgid "Description"
-msgstr ""
-
-#: classes/class.wc-cop.php:220
-msgid "Payment method description that the customer will see on your website."
-msgstr ""
-
-#: classes/class.wc-cop.php:221 classes/class.wc-cop.php:228
-msgid "Pay with cash on pickup."
-msgstr ""
-
-#: classes/class.wc-cop.php:225
-msgid "Instructions"
-msgstr ""
-
-#: classes/class.wc-cop.php:227
-msgid "Instructions that will be added to the thank you page."
-msgstr ""
-
-#: classes/class.wc-cop.php:232
-msgid "Enable for shipping methods"
-msgstr ""
-
-#: classes/class.wc-cop.php:237
-msgid ""
-"If COP is only available for certain methods, set it up here. Leave blank to "
-"enable for all methods."
-msgstr ""
-
-#: classes/class.wc-cop.php:242
-msgid "Default order status"
-msgstr ""
-
-#: classes/class.wc-cop.php:248
-msgid "Disable other payment methods if local pickup"
-msgstr ""
-
-#: classes/class.wc-cop.php:249
-msgid ""
-"Cash on pickup will be the only payment method available if local pickup is "
-"selected on checkout"
-msgstr ""
-
-#: classes/class.wc-cop.php:255
-msgid "Accept for virtual orders"
-msgstr ""
-
-#: classes/class.wc-cop.php:256
-msgid "Accept COP if the order is virtual"
-msgstr ""
-
-#: wc-cash-on-pickup.php:76
-msgid "Donate"
-msgstr ""
-
-#: wc-cash-on-pickup.php:78
-msgid "Settings"
-msgstr ""
-
-#. Plugin Name of the plugin/theme
-msgid "WooCommerce Cash On Pickup"
-msgstr ""
-
-#. Plugin URI of the plugin/theme
+#. Plugin URI of the plugin
+#: wc-cash-on-pickup.php
 msgid "https://wordpress.org/plugins/wc-cash-on-pickup/"
 msgstr ""
 
-#. Description of the plugin/theme
-msgid ""
-"A WooCommerce Extension that adds the payment gateway \"Cash On Pickup\""
+#. Description of the plugin
+#: wc-cash-on-pickup.php
+msgid "A WooCommerce Extension that adds the payment gateway \"Cash On Pickup\". Supports both the classic and the block based checkout."
+msgstr ""
+
+#. Author of the plugin
+#: wc-cash-on-pickup.php
+msgid "Marian Kadanka"
+msgstr ""
+
+#. Author URI of the plugin
+#: wc-cash-on-pickup.php
+msgid "https://kadanka.net/"
+msgstr ""
+
+#: classes/class.wc-cop-blocks.php:161
+#: classes/class.wc-cop.php:246
+#: classes/class.wc-cop.php:391
+msgid "Cash on pickup"
+msgstr ""
+
+#: classes/class.wc-cop.php:247
+msgid "Have your customers pay with cash (or by other means) on pickup."
+msgstr ""
+
+#: classes/class.wc-cop.php:382
+msgid "Enable cash on pickup"
+msgstr ""
+
+#: classes/class.wc-cop.php:398
+#: classes/class.wc-cop.php:405
+msgid "Pay with cash on pickup."
+msgstr ""
+
+#: classes/class.wc-cop.php:414
+msgid "If COP is only available for certain methods, set it up here. Leave blank to enable for all methods."
+msgstr ""
+
+#: classes/class.wc-cop.php:422
+msgid "Default order status"
+msgstr ""
+
+#: classes/class.wc-cop.php:428
+msgid "Disable other payment methods for local pickup"
+msgstr ""
+
+#: classes/class.wc-cop.php:429
+msgid "Make cash on pickup the only payment method when local pickup is selected at checkout"
+msgstr ""
+
+#: classes/class.wc-cop.php:436
+msgid "Accept COP if the order is virtual"
+msgstr ""
+
+#: classes/class.wc-cop.php:617
+msgid "Payment to be made upon pickup."
+msgstr ""
+
+#: wc-cash-on-pickup.php:89
+msgid "Donate"
 msgstr ""

@@ -2,8 +2,8 @@
 /*
 Plugin Name:       Cash On Pickup for WooCommerce
 Plugin URI:        https://wordpress.org/plugins/wc-cash-on-pickup/
-Description:       A WooCommerce Extension that adds the payment gateway "Cash On Pickup". Works with CLASSIC checkout only.
-Version:           1.7.1
+Description:       A WooCommerce Extension that adds the payment gateway "Cash On Pickup". Supports both the classic and the block based checkout.
+Version:           2.0.0
 Author:            Marian Kadanka
 Author URI:        https://kadanka.net/
 Text Domain:       wc-cash-on-pickup
@@ -11,13 +11,16 @@ Domain Path:       /languages
 License:           GPL-2.0+
 License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
 GitHub Plugin URI: https://github.com/marian-kadanka/wc-cash-on-pickup
-WC tested up to:   10.3
+Requires at least: 4.4
+Requires PHP:      7.4
+WC requires at least: 3.4
+WC tested up to:   11.1
 */
 
 /**
  * Cash On Pickup for WooCommerce
  * Copyright (C) 2013-2014 Pinch Of Code. All rights reserved.
- * Copyright (C) 2017-2025 Marian Kadanka. All rights reserved.
+ * Copyright (C) 2017-2026 Marian Kadanka. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,19 +41,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+define( 'WC_COP_VERSION', '2.0.0' );
+define( 'WC_COP_PLUGIN_FILE', __FILE__ );
+
 /**
  * Start the plugin
  */
 function wc_cop_init() {
-	global $woocommerce;
 
-	if ( !isset( $woocommerce ) ) {
+	if ( ! class_exists( 'WooCommerce' ) ) {
 		return;
 	}
 
 	require_once( 'classes/class.wc-cop.php' );
 }
 add_action( 'plugins_loaded', 'wc_cop_init' );
+
+/**
+ * Load the plugin translations.
+ */
+function wc_cop_load_textdomain() {
+	load_plugin_textdomain( 'wc-cash-on-pickup', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+}
+add_action( 'init', 'wc_cop_load_textdomain' );
 
 /**
  * Add COP in WooCommerce payment gateways
@@ -83,10 +96,30 @@ function wc_cop_action_links( $links, $file ) {
 add_filter( 'plugin_action_links', 'wc_cop_action_links', 10, 4 );
 
 /**
- * Declare WooCommerce HPOS compatibility.
+ * Register the gateway with the Cart and Checkout blocks.
+ *
+ * The block checkout renders payment methods client side, so on top of the gateway itself it
+ * needs a payment method type that hands its settings and script over to the blocks registry.
+ *
+ * @param Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry
+ */
+function wc_cop_register_block_support( $payment_method_registry ) {
+	if ( ! class_exists( '\Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+		return;
+	}
+
+	require_once plugin_dir_path( __FILE__ ) . 'classes/class.wc-cop-blocks.php';
+
+	$payment_method_registry->register( new WC_Gateway_Cash_on_pickup_Blocks_Support() );
+}
+add_action( 'woocommerce_blocks_payment_method_type_registration', 'wc_cop_register_block_support' );
+
+/**
+ * Declare WooCommerce HPOS and Cart/Checkout blocks compatibility.
  */
 add_action( 'before_woocommerce_init', function() {
 	if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
 		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
 	}
 } );
