@@ -17,7 +17,7 @@ const { artifactPath, profilePath } = require('../lib/artifacts.js');
 const { wpEval, setGatewaySettings } = require('../lib/wp.js');
 const config = require('../config.js');
 
-const CHECKOUT = config.baseUrl + config.classicCheckoutPath;
+const CHECKOUT = config.checkoutUrl('classic');
 const MARKER = config.instructionsMarker;
 
 /** Sets a checkout field the way a customer typing into it would. */

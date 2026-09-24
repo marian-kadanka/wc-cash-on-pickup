@@ -59,7 +59,9 @@ belongs under a web root. Everything goes to `wc-cop-tests` in the system temp d
 
 The end-to-end tests change store settings, so `bin/setup-site.php` first writes every value it
 is about to touch to `site-backup.json` in that directory, and `bin/restore-site.php` puts them
-all back and deletes the backup. `run-all.sh` restores on exit even when a phase fails.
+all back and deletes the backup. It writes `site-state.json` alongside it with the checkout
+pages it resolved, and restore deletes any page it had to create. `run-all.sh` restores on exit
+even when a phase fails.
 
 What it changes while running: the checkout page, the gateway's own settings, the Checkout
 block's local pickup configuration, and guest checkout (enabled so that placing orders does not
@@ -79,16 +81,35 @@ place, because that is the evidence that the flow worked. Delete them when you a
 | Key | What it is | How to find it |
 | --- | --- | --- |
 | `baseUrl`, `wpPath` | store URL and WordPress root | — |
-| `classicCheckoutPageId` | a page containing `[woocommerce_checkout]` | `wp option get woocommerce_checkout_page_id` |
-| `blockCheckoutPageId` | a page containing the Checkout block | create one, then `wp post list --post_type=page` |
 | `physicalProductId`, `virtualProductId` | one product that needs shipping, one that does not | `wp wc product list --user=1` |
 | `address` | an address inside the zone the rates below belong to | — |
 | `rates` | rate ids offered for that address | see snippet below |
 | `gatewaySettings` | the baseline the matrices vary from | — |
 
-Both checkout pages are needed because WooCommerce only registers its block-only
-`pickup_location` shipping method when the Checkout block *is* the store's checkout page, and
-`is_checkout()` only holds on the configured page for the classic one.
+### Checkout pages
+
+Page ids and slugs are never configured. `bin/setup-site.php` discovers both checkout pages
+from WooCommerce's own settings and writes what it found to `site-state.json` next to the
+backup; `config.js` merges that in, so the tests just ask for `config.checkoutUrl('classic')`
+or `config.checkoutUrl('block')`.
+
+How each one is resolved, in order:
+
+1. the page the store has configured (`woocommerce_checkout_page_id`), if its content matches
+   the kind being looked for
+2. a page a previous run created, marked with the `_wc_cop_test_page` meta
+3. the oldest published page whose content carries `[woocommerce_checkout]` or the
+   `wp:woocommerce/checkout` block
+4. failing all of that, a new page - using WooCommerce's own default block markup - which
+   `bin/restore-site.php` deletes again afterwards
+
+Both kinds are needed because WooCommerce only registers its block-only `pickup_location`
+shipping method when the Checkout block *is* the store's checkout page. `run-all.sh` therefore
+points `woocommerce_checkout_page_id` at the classic page for the classic phases and at the
+block page for the block phases, using the ids `setup-site.php` resolved.
+
+Not deriving these from settings was a real bug: WooCommerce's "switch to block checkout"
+swaps the two pages' slugs, which silently pointed the suite at the wrong URLs.
 
 List the rate ids a zone offers:
 

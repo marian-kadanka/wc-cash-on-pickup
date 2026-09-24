@@ -17,7 +17,7 @@ const { artifactPath, profilePath } = require('../lib/artifacts.js');
 const { setGatewaySettings } = require('../lib/wp.js');
 const config = require('../config.js');
 
-const CHECKOUT = config.baseUrl + config.blockCheckoutPath;
+const CHECKOUT = config.checkoutUrl('block');
 const R = config.rates;
 const LOCAL_PICKUP_RATES = [R.localPickup, R.pickupLocation];
 

@@ -9,13 +9,11 @@
  * Override with "artifactsDir" in config.json if you want them somewhere else.
  */
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const config = require('../config.js');
 
 function artifactsDir(...parts) {
-  const base = config.artifactsDir || path.join(os.tmpdir(), 'wc-cop-tests');
-  const dir = path.join(base, ...parts);
+  const dir = path.join(config.artifactsBase, ...parts);
   fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
   return dir;
 }

@@ -15,7 +15,7 @@ const { artifactPath, profilePath } = require('../lib/artifacts.js');
 const { wpEval, setGatewaySettings } = require('../lib/wp.js');
 const config = require('../config.js');
 
-const BLOCK = config.baseUrl + config.blockCheckoutPath;
+const BLOCK = config.checkoutUrl('block');
 const MARKER = config.instructionsMarker;
 
 const PAGE_API = `

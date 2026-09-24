@@ -10,8 +10,6 @@ set -uo pipefail
 TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PLUGIN_REL="wp-content/plugins/wc-cash-on-pickup"
 WP_PATH="$(node -p "require('$TESTS_DIR/config.json').wpPath")"
-CLASSIC_PAGE="$(node -p "require('$TESTS_DIR/config.json').classicCheckoutPageId")"
-BLOCK_PAGE="$(node -p "require('$TESTS_DIR/config.json').blockCheckoutPageId")"
 
 only="${1:-all}"
 failed=0
@@ -28,6 +26,10 @@ fi
 
 # ---- end to end: changes site options, always restored below ------------------------------
 wp --path="$WP_PATH" eval-file "$WP_PATH/$PLUGIN_REL/tests/bin/setup-site.php" || exit 1
+
+# setup-site.php resolved which pages to drive; config.js merges that in for us.
+CLASSIC_PAGE="$(node -p "require('$TESTS_DIR/config.js').classicCheckoutPageId")"
+BLOCK_PAGE="$(node -p "require('$TESTS_DIR/config.js').blockCheckoutPageId")"
 
 cleanup() {
   echo; echo "=== restoring site ==="

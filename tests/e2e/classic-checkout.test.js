@@ -16,7 +16,7 @@ const { artifactPath, profilePath } = require('../lib/artifacts.js');
 const { setGatewaySettings } = require('../lib/wp.js');
 const config = require('../config.js');
 
-const CHECKOUT = config.baseUrl + config.classicCheckoutPath;
+const CHECKOUT = config.checkoutUrl('classic');
 const R = config.rates;
 // The block checkout's "pickup_location" method only exists when the Checkout block is the
 // store's checkout page, so the classic matrix never sees it.

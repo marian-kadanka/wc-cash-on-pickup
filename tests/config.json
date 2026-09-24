@@ -4,11 +4,6 @@
 
   "artifactsDir": null,
 
-  "classicCheckoutPageId": 7461,
-  "classicCheckoutPath": "/checkout/",
-  "blockCheckoutPageId": 7473,
-  "blockCheckoutPath": "/cop-block-checkout-test/",
-
   "physicalProductId": 7302,
   "virtualProductId": 7307,
 
