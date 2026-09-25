@@ -135,6 +135,16 @@ async function selectPickupOption(chrome, rateId) {
   return Object.assign(res, confirmed);
 }
 
+/** Selects a rate through the Store API, for the shape where there is no Pickup tab to click. */
+async function selectRateViaApi(chrome, rateId) {
+  return chrome.eval(`
+    ${PAGE_API}
+    const r = await api('/cart/select-shipping-rate', 'POST', { package_id: 0, rate_id: ${JSON.stringify(rateId)} });
+    if (r.status >= 400) return { error: JSON.stringify(r.body) };
+    return { ok: true };
+  `);
+}
+
 /** Switches back to Ship and reports the rate that ended up selected. */
 async function switchToShip(chrome, pickupRates) {
   return chrome.eval(`
@@ -192,8 +202,8 @@ async function readPayment(chrome) {
   // as much as the single ones - and they are the reason each pass also checks a shipped rate,
   // without which "match anything that collects" and "match everything" look identical.
   const LP = R.localPickup;                       // a zone local_pickup instance, when the shape has one
-  const PL0 = config.rate('pickupLocation');      // one specific pickup location
-  const combos = [
+  const PL0 = R.pickupLocation;                   // one specific pickup location, when there are any
+  const combos = !PL0 ? [] : [
     { label: 'no value - enabled everywhere',                   enable_for_methods: [] },
     { label: 'any "Local pickup" method',                        enable_for_methods: ['local_pickup'], zoneOnly: true },
     { label: 'one local pickup zone instance',                   enable_for_methods: [LP], zoneOnly: true },
@@ -209,7 +219,7 @@ async function readPayment(chrome) {
   const chrome = await new Chrome({ profile: profilePath('pickup-ui'), port: 9336 }).launch();
   try {
     console.log(`store shape: ${config.storeShape}`);
-    console.log(`expected pickup rates: ${EXPECTED_PICKUP_RATES.join(', ')}\n`);
+    console.log(`expected pickup rates: ${EXPECTED_PICKUP_RATES.join(', ') || '(none - no Pickup tab)'}\n`);
 
     setGatewaySettings({ enable_for_methods: [], exclusive_for_local: 'no' });
     await chrome.goto(`${config.baseUrl}/?add-to-cart=${config.physicalProductId}`);
@@ -218,6 +228,53 @@ async function readPayment(chrome) {
     if (cart.error) throw new Error('cart setup: ' + cart.error);
     await chrome.goto(CHECKOUT);
     await settled(chrome);
+
+    // ---- no Pickup tab at all ---------------------------------------------------------------
+    // The toggle is gated on the block's Local Pickup setting alone, not on whether collection
+    // rates exist: a store with a zone local_pickup but that setting switched off has no toggle,
+    // and the zone rate appears in the ordinary shipping list instead. The gateway still has to
+    // recognise it as collection, which is what "Disable other payment methods" depends on.
+    if ('pickup-disabled' === config.storeShape) {
+      const toggle = await chrome.eval(`
+        return [...document.querySelectorAll('.wc-block-checkout__shipping-method-option')].map(o => o.innerText.trim());
+      `);
+      check('no Ship / Pickup toggle is rendered', toggle.length === 0, toggle);
+
+      const offered = await chrome.eval(`
+        const c = wp.data.select('wc/store/cart').getCartData();
+        return (c.shippingRates || []).flatMap(p => p.shipping_rates.map(r => r.rate_id));
+      `);
+      check('the zone local pickup is offered as an ordinary rate', offered.includes(LP), offered);
+      check('no pickup_location rate is offered', !offered.some((r) => r.startsWith('pickup_location:')), offered);
+
+      const passes = [
+        { label: 'exclusive', enable_for_methods: [], exclusive_for_local: 'yes' },
+        { label: 'efm=["local_pickup"]', enable_for_methods: ['local_pickup'], exclusive_for_local: 'no' },
+      ];
+      for (const { label, ...settings } of passes) {
+        const s = setGatewaySettings(settings);
+        for (const rateId of [LP, config.rate('flatRate')]) {
+          const sel = await selectRateViaApi(chrome, rateId);
+          if (sel.error) { check(`${label} | ${rateId}`, false, sel); continue; }
+          await chrome.goto(CHECKOUT);
+          const view = await readPayment(chrome);
+          const gotCop = view.methods.includes('cop');
+          const gotOnly = view.methods.length === 1 && gotCop;
+          const wantCop = expectCop(s, rateId);
+          const wantOnly = 'yes' === s.exclusive_for_local && rateId === LP && wantCop;
+          check(
+            `${label} | ${rateId}`,
+            view.selectedRates.includes(rateId) && gotCop === wantCop && gotOnly === wantOnly,
+            { wantCop, gotCop, wantOnly, gotOnly, methods: view.methods, selectedRates: view.selectedRates }
+          );
+        }
+      }
+
+      await chrome.close();
+      fs.writeFileSync(artifactPath('results-pickup-ui.json'), JSON.stringify(results, null, 1));
+      console.log(`\nBLOCK PICKUP UI: ${pass} passed, ${fail} failed`);
+      process.exit(fail ? 1 : 0);
+    }
 
     // ---- structure ------------------------------------------------------------------------
     const toggle = await chrome.eval(`

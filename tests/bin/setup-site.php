@@ -22,6 +22,10 @@
  *                             (html-admin-page-shipping-zone-methods.php, guarded by
  *                             ShippingController::is_legacy_local_pickup_active()) - so
  *                             pickup_location is the only way to collect an order.
+ *   pickup-disabled           a store that has a zone local_pickup but never switched the
+ *                             block's own Local Pickup on. The Ship / Pickup toggle is not
+ *                             rendered at all - it is gated on that setting alone - so
+ *                             collecting happens from the ordinary shipping rate list.
  *
  * Restore afterwards with bin/restore-site.php - it puts every option back, deletes any page or
  * shipping method instance this script created, and re-enables anything it disabled.
@@ -260,10 +264,14 @@ $dir    = dirname( __DIR__ );
 $config = json_decode( file_get_contents( $dir . '/config.json' ), true );
 
 $shape = isset( $args[0] ) ? $args[0] : 'grandfathered';
-if ( ! in_array( $shape, array( 'grandfathered', 'block-first' ), true ) ) {
-	echo "Unknown store shape \"$shape\". Use \"grandfathered\" or \"block-first\".\n";
+if ( ! in_array( $shape, array( 'grandfathered', 'block-first', 'pickup-disabled' ), true ) ) {
+	echo "Unknown store shape \"$shape\". Use \"grandfathered\", \"block-first\" or \"pickup-disabled\".\n";
 	exit( 1 );
 }
+
+// The two independent switches the shapes are made of.
+$pickup_location_enabled = 'pickup-disabled' !== $shape; // the block's own Local Pickup setting
+$zone_pickup_wanted      = 'block-first' !== $shape;     // a zone based local_pickup instance
 
 $backup_file = wc_cop_tests_backup_file( $config );
 $state_file  = wc_cop_tests_state_file( $config );
@@ -331,7 +339,7 @@ update_option( 'woocommerce_checkout_page_id', $block_id );
 
 // Two pickup locations, so pickup_location:0 and pickup_location:1 both exist. The instance id
 // of a pickup_location rate is the index of the enabled location, not a zone instance id.
-update_option( 'woocommerce_pickup_location_settings', array( 'enabled' => 'yes', 'title' => 'Pickup', 'tax_status' => 'taxable', 'cost' => '' ) );
+update_option( 'woocommerce_pickup_location_settings', array( 'enabled' => $pickup_location_enabled ? 'yes' : 'no', 'title' => 'Pickup', 'tax_status' => 'taxable', 'cost' => '' ) );
 update_option(
 	'pickup_location_pickup_locations',
 	array(
@@ -376,11 +384,16 @@ foreach ( array( $flat_a, $flat_b ) as $instance_id ) {
 }
 
 $rates = array(
-	'flatRate'            => 'flat_rate:' . $flat_a,
-	'flatRateOther'       => 'flat_rate:' . $flat_b,
-	'pickupLocation'      => 'pickup_location:0',
-	'pickupLocationOther' => 'pickup_location:1',
+	'flatRate'      => 'flat_rate:' . $flat_a,
+	'flatRateOther' => 'flat_rate:' . $flat_b,
 );
+
+// With the block's Local Pickup switched off the locations produce no rates at all, so the
+// tests must not be told about ids that will never appear.
+if ( $pickup_location_enabled ) {
+	$rates['pickupLocation']      = 'pickup_location:0';
+	$rates['pickupLocationOther'] = 'pickup_location:1';
+}
 
 // Whatever zone local_pickup the store already has is switched off for the duration of the run,
 // in both shapes. Otherwise the Pickup list would contain the site's own instances as well and
@@ -395,7 +408,7 @@ foreach ( wc_cop_tests_all_zones() as $any_zone ) {
 	}
 }
 
-if ( 'grandfathered' === $shape ) {
+if ( $zone_pickup_wanted ) {
 	// One zone-based local_pickup of our own, as a store that predates the block checkout has.
 	$local_pickup         = wc_cop_tests_add_zone_method( $zone, 'local_pickup', array( 'title' => 'COP test local pickup', 'cost' => '' ) );
 	$created_instances[]  = array( 'zone' => $zone->get_id(), 'instance' => $local_pickup, 'method' => 'local_pickup' );
@@ -430,7 +443,8 @@ echo 'store shape:      ' . $shape . "\n";
 echo 'classic checkout: ' . $state['classicCheckoutPath'] . ' (page ' . $classic_id . ')' . ( in_array( $classic_id, $created, true ) ? ' - created' : '' ) . "\n";
 echo 'block checkout:   ' . $state['blockCheckoutPath'] . ' (page ' . $block_id . ')' . ( in_array( $block_id, $created, true ) ? ' - created' : '' ) . "\n";
 echo 'block default:    ' . var_export( \Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::is_checkout_block_default(), true ) . "\n";
-echo 'zone local pickup:' . ( $legacy_active ? ' active (grandfathered)' : ' none (block-first)' ) . "\n";
+echo 'zone local pickup:' . ( $legacy_active ? ' active' : ' none' ) . "\n";
+echo 'block pickup tab: ' . ( $pickup_location_enabled ? ' enabled' : ' disabled (no Ship/Pickup toggle)' ) . "\n";
 echo 'shipping zone:    ' . $zone->get_id() . ' "' . $zone->get_zone_name() . '"' . "\n";
 echo 'rates:            ' . wp_json_encode( $rates ) . "\n";
 if ( $disabled_instances ) {
@@ -453,12 +467,14 @@ if ( ! in_array( 'pickup_location', $registered, true ) || ! in_array( 'pickup_l
 }
 
 // A shape the tests cannot actually exercise must not look like a successful setup.
-if ( 'block-first' === $shape && $legacy_active ) {
-	echo "FAILED: zone local_pickup is still active, so this is not a block-first store.\n";
+if ( $zone_pickup_wanted !== $legacy_active ) {
+	echo 'FAILED: zone local_pickup is ' . ( $legacy_active ? 'active' : 'absent' ) . ", which is not what the $shape shape needs.\n";
 	exit( 1 );
 }
-if ( 'grandfathered' === $shape && ! $legacy_active ) {
-	echo "FAILED: no zone offers local_pickup, so this is not a grandfathered store.\n";
+
+$pickup_setting = get_option( 'woocommerce_pickup_location_settings' );
+if ( $pickup_location_enabled !== ( 'yes' === $pickup_setting['enabled'] ) ) {
+	echo "FAILED: the block's Local Pickup setting is not what the $shape shape needs.\n";
 	exit( 1 );
 }
 

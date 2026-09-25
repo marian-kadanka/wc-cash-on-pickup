@@ -112,7 +112,10 @@ async function readCheckout(chrome) {
   // "Enable for shipping methods" has to match both at group level ("local_pickup",
   // "pickup_location") and at instance level ("flat_rate:9", "pickup_location:1") - see
   // get_matching_rates(). A group entry must also match a second instance of the same method.
-  const efmCombos = [[], [config.rate('flatRate')], ['pickup_location'], [config.rate('pickupLocation')]];
+  const efmCombos = [[], [config.rate('flatRate')], ['pickup_location']];
+  if (R.pickupLocation) {
+    efmCombos.push([R.pickupLocation]);
+  }
   if (R.localPickup) {
     efmCombos.push(['local_pickup'], [R.localPickup]);
   }

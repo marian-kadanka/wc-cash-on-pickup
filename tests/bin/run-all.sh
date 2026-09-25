@@ -2,15 +2,22 @@
 #
 # Runs the whole suite and always puts the site back, even if a phase fails.
 #
-#   tests/bin/run-all.sh                 # unit tests, then both store shapes
+#   tests/bin/run-all.sh                 # unit tests, then every store shape
 #   tests/bin/run-all.sh unit            # just the unit tests (no site changes)
 #   tests/bin/run-all.sh grandfathered   # unit tests, then that shape only
 #   tests/bin/run-all.sh block-first
+#   tests/bin/run-all.sh pickup-disabled
 #
-# The two shapes are not interchangeable. A store that predates the block checkout still has a
-# zone based local_pickup; a store created after the block checkout became the default cannot
-# have one, because WooCommerce hides local_pickup from the shipping method picker unless a zone
-# already offers it. Only the second shape is what a new store looks like, so both are covered.
+# The shapes are not interchangeable:
+#
+#   grandfathered    predates the block checkout, so it still has a zone based local_pickup
+#                    alongside the block's own pickup_location
+#   block-first      what a store created today looks like - it cannot have a zone local_pickup,
+#                    because WooCommerce hides it from the shipping method picker unless one is
+#                    already enabled
+#   pickup-disabled  has a zone local_pickup but never switched the block's Local Pickup on, so
+#                    there is no Ship / Pickup toggle and collecting happens from the shipping
+#                    rate list like any other method
 #
 set -uo pipefail
 
@@ -33,9 +40,9 @@ if [ "$only" = "unit" ]; then
 fi
 
 case "$only" in
-  all)                     shapes="grandfathered block-first" ;;
-  grandfathered|block-first) shapes="$only" ;;
-  *) echo "Unknown argument \"$only\". Use unit, grandfathered, block-first, or nothing."; exit 1 ;;
+  all) shapes="grandfathered block-first pickup-disabled" ;;
+  grandfathered|block-first|pickup-disabled) shapes="$only" ;;
+  *) echo "Unknown argument \"$only\". Use unit, a shape name, or nothing."; exit 1 ;;
 esac
 
 # Restore whenever a backup is outstanding: after each shape below, but also if a phase aborts
