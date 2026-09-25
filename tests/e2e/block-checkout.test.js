@@ -19,7 +19,11 @@ const config = require('../config.js');
 
 const CHECKOUT = config.checkoutUrl('block');
 const R = config.rates;
-const LOCAL_PICKUP_RATES = [R.localPickup, R.pickupLocation];
+
+// Everything that counts as collecting in person. Zone local_pickup is absent on a block-first
+// store - WooCommerce hides it from the shipping method picker there - so the matrix follows the
+// shape setup-site.php produced instead of asserting against a rate that cannot be selected.
+const LOCAL_PICKUP_RATES = [R.localPickup, R.pickupLocation, R.pickupLocationOther].filter(Boolean);
 
 // --- what the documented feature set says should happen ------------------------------------
 function expectCop(s, sc) {
@@ -96,16 +100,24 @@ async function readCheckout(chrome) {
 
 (async () => {
   const scenarios = [
-    ...[R.flatRate, R.flatRateOther, R.localPickup, R.pickupLocation].map((rate) => (
+    ...[config.rate('flatRate'), config.rate('flatRateOther'), ...LOCAL_PICKUP_RATES].map((rate) => (
       { name: `physical/${rate}`, products: [config.physicalProductId], rate, needsShipping: true }
     )),
-    { name: `mixed/${R.localPickup}`, products: [config.physicalProductId, config.virtualProductId], rate: R.localPickup, needsShipping: true },
-    { name: `mixed/${R.flatRate}`, products: [config.physicalProductId, config.virtualProductId], rate: R.flatRate, needsShipping: true },
+    { name: `mixed/${LOCAL_PICKUP_RATES[0]}`, products: [config.physicalProductId, config.virtualProductId], rate: LOCAL_PICKUP_RATES[0], needsShipping: true },
+    { name: `mixed/${config.rate('flatRate')}`, products: [config.physicalProductId, config.virtualProductId], rate: config.rate('flatRate'), needsShipping: true },
     { name: 'virtual', products: [config.virtualProductId], rate: null, needsShipping: false },
   ];
 
   const settingsCombos = [];
-  for (const efm of [[], ['local_pickup'], [R.flatRate], ['pickup_location']]) {
+  // "Enable for shipping methods" has to match both at group level ("local_pickup",
+  // "pickup_location") and at instance level ("flat_rate:9", "pickup_location:1") - see
+  // get_matching_rates(). A group entry must also match a second instance of the same method.
+  const efmCombos = [[], [config.rate('flatRate')], ['pickup_location'], [config.rate('pickupLocation')]];
+  if (R.localPickup) {
+    efmCombos.push(['local_pickup'], [R.localPickup]);
+  }
+
+  for (const efm of efmCombos) {
     for (const excl of ['no', 'yes']) {
       for (const virt of ['yes', 'no']) {
         settingsCombos.push({ enable_for_methods: efm, exclusive_for_local: excl, enable_for_virtual: virt });
@@ -156,13 +168,17 @@ async function readCheckout(chrome) {
         const wantOnly = expectOnlyCop(s, sc);
         const gotCop = view.methods.includes('cop');
         const gotOnly = view.methods.length === 1 && gotCop;
-        const serverCop = (setup.serverPaymentMethods || []).includes('cop');
+        // The server's own list, read from the settled page rather than from the Store API call
+        // fired right after select-shipping-rate. That earlier read can land before the session
+        // has persisted the new choice, so it answers for the previously selected rate - which
+        // showed up as six failures whose rendered page was correct.
+        const serverCop = (view.hydratedPaymentMethods || []).includes('cop');
         const errs = [...chrome.consoleErrors, ...chrome.pageErrors].filter((e) => !/favicon|404|net::ERR/i.test(e));
 
         const ok = rateOk && gotCop === wantCop && gotOnly === wantOnly && serverCop === wantCop && errs.length === 0;
         ok ? pass++ : fail++;
         const tag = `efm=${JSON.stringify(s.enable_for_methods)} excl=${s.exclusive_for_local} virt=${s.enable_for_virtual}${s.enabled === 'no' ? ' DISABLED' : ''}`;
-        results.push({ tag, scenario: sc.name, wantCop, gotCop, serverCop, wantOnly, gotOnly, methods: view.methods, hydratedRates: view.hydratedRates, rateOk, errs, ok });
+        results.push({ tag, scenario: sc.name, wantCop, gotCop, serverCop, atSetup: setup.serverPaymentMethods, wantOnly, gotOnly, methods: view.methods, hydratedRates: view.hydratedRates, rateOk, errs, ok });
         if (!ok) {
           console.log(`FAIL ${tag} | ${sc.name}`);
           console.log(`     want cop=${wantCop} onlyCop=${wantOnly} | got cop=${gotCop} (server ${serverCop}) onlyCop=${gotOnly} methods=${JSON.stringify(view.methods)}`);

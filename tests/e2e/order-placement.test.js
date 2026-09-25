@@ -33,7 +33,10 @@ const PAGE_API = `
 (async () => {
   const cases = [];
   for (const status of ['on-hold', 'processing', 'completed']) {
-    cases.push({ name: `physical+local pickup, status=${status}`, products: [config.physicalProductId], rate: config.rates.localPickup, status, exclusive: 'yes' });
+    // Collect through whatever this store shape offers: zone local_pickup when it exists,
+    // otherwise the block's own pickup_location, which is all a block-first store has.
+    const pickupRate = config.rateOrNull('localPickup') || config.rate('pickupLocation');
+    cases.push({ name: `physical+${pickupRate}, status=${status}`, products: [config.physicalProductId], rate: pickupRate, status, exclusive: 'yes' });
     cases.push({ name: `virtual, status=${status}`, products: [config.virtualProductId], rate: null, status, exclusive: 'no' });
   }
 

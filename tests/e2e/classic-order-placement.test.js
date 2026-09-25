@@ -33,7 +33,7 @@ const fillField = (id, value) => `
 
 (async () => {
   const cases = [
-    { name: 'physical + local pickup, status=on-hold', products: [config.physicalProductId], rate: config.rates.localPickup, status: 'on-hold' },
+    { name: 'physical + local pickup, status=on-hold', products: [config.physicalProductId], rate: config.rate('localPickup'), status: 'on-hold' },
     { name: 'virtual, status=processing', products: [config.virtualProductId], rate: null, status: 'processing' },
   ];
 

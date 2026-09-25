@@ -18,9 +18,13 @@ const config = require('../config.js');
 
 const CHECKOUT = config.checkoutUrl('classic');
 const R = config.rates;
+
+// The classic matrix drives zone based local_pickup, which only a grandfathered store has.
+// config.rate() throws with an explanation if the run was set up block-first.
+const LOCAL_PICKUP = config.rate('localPickup');
 // The block checkout's "pickup_location" method only exists when the Checkout block is the
 // store's checkout page, so the classic matrix never sees it.
-const LOCAL_PICKUP_RATES = [R.localPickup];
+const LOCAL_PICKUP_RATES = [LOCAL_PICKUP];
 
 function expectCop(s, sc) {
   if (s.enabled !== 'yes') return false;
@@ -52,12 +56,12 @@ const READ = `
   const scenarios = [
     { name: `physical/${R.flatRate}`, products: [config.physicalProductId], rate: R.flatRate, needsShipping: true },
     { name: `physical/${R.flatRateOther}`, products: [config.physicalProductId], rate: R.flatRateOther, needsShipping: true },
-    { name: `physical/${R.localPickup}`, products: [config.physicalProductId], rate: R.localPickup, needsShipping: true },
-    { name: `mixed/${R.localPickup}`, products: [config.physicalProductId, config.virtualProductId], rate: R.localPickup, needsShipping: true },
+    { name: `physical/${LOCAL_PICKUP}`, products: [config.physicalProductId], rate: LOCAL_PICKUP, needsShipping: true },
+    { name: `mixed/${LOCAL_PICKUP}`, products: [config.physicalProductId, config.virtualProductId], rate: LOCAL_PICKUP, needsShipping: true },
     { name: 'virtual', products: [config.virtualProductId], rate: null, needsShipping: false },
   ];
   const settingsCombos = [];
-  for (const efm of [[], ['local_pickup'], [R.flatRate], ['pickup_location']]) {
+  for (const efm of [[], ['local_pickup'], [R.flatRate], ['pickup_location'], [LOCAL_PICKUP]]) {
     for (const excl of ['no', 'yes']) {
       for (const virt of ['yes', 'no']) {
         settingsCombos.push({ enable_for_methods: efm, exclusive_for_local: excl, enable_for_virtual: virt });

@@ -18,12 +18,6 @@
     "phone": "0900123456"
   },
 
-  "rates": {
-    "flatRate": "flat_rate:1",
-    "flatRateOther": "flat_rate:5",
-    "localPickup": "local_pickup:2",
-    "pickupLocation": "pickup_location:0"
-  },
 
   "gatewaySettings": {
     "enabled": "yes",
