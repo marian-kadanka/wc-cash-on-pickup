@@ -93,7 +93,9 @@ if ( isset( $options['local_pickup'], $options['pickup_location'] ) ) {
 // --- zone instances ----------------------------------------------------------------------------
 check( 'the created flat rate is offered as an instance', isset( $options[ $rates['flatRate'] ] ), $rates['flatRate'] . ' missing' );
 
-if ( 'grandfathered' === $shape ) {
+// Whether a zone offers local_pickup is the dimension that matters here, not the shape's name:
+// both "grandfathered" and "pickup-disabled" have one, and only "block-first" does not.
+if ( isset( $rates['localPickup'] ) ) {
 	check( 'the zone local pickup is offered as an instance', isset( $options[ $rates['localPickup'] ] ), $rates['localPickup'] . ' missing' );
 } else {
 	// "Block-first" means no zone *offers* local pickup - not that the instances are gone. The
