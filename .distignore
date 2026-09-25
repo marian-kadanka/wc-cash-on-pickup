@@ -3,4 +3,5 @@
 .gitattributes
 .gitignore
 .distignore
+CLAUDE.md
 tests

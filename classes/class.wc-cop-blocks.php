@@ -4,7 +4,6 @@
  *
  * Checkout block (WooCommerce Blocks / Store API) support for the gateway.
  *
- * Copyright (C) 2013-2014 Pinch Of Code. All rights reserved.
  * Copyright (C) 2017-2026 Marian Kadanka. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +28,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
-if ( ! class_exists( 'WC_Gateway_Cash_on_pickup_Blocks_Support' ) ) :
+if ( class_exists( 'WC_Gateway_Cash_on_pickup_Blocks_Support' ) ) {
+	return;
+}
 
 /**
  * Exposes the Cash on Pickup gateway to the block based checkout.
@@ -254,5 +255,3 @@ final class WC_Gateway_Cash_on_pickup_Blocks_Support extends AbstractPaymentMeth
 		return array_values( (array) apply_filters( 'wc_cop_blocks_description_allowed_tags', $tags ) );
 	}
 }
-
-endif;
