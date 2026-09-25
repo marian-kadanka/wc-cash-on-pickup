@@ -69,6 +69,7 @@ for shape in $shapes; do
 
   # The block checkout has to be the store's checkout page for "pickup_location" to exist.
   wp_ option update woocommerce_checkout_page_id "$BLOCK_PAGE" >/dev/null
+  run "e2e [$shape]: enable_for_methods option list" wp_ eval-file "$WP_PATH/$PLUGIN_REL/tests/e2e/settings-options.php"
   run "e2e [$shape]: block checkout matrix" node "$TESTS_DIR/e2e/block-checkout.test.js"
   run "e2e [$shape]: block pickup locations UI" node "$TESTS_DIR/e2e/block-pickup-ui.test.js"
   run "e2e [$shape]: block order placement" node "$TESTS_DIR/e2e/order-placement.test.js"
